@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>GPA Analytics Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:      #060b18;
+    --surface: #0d1626;
+    --card:    #111d33;
+    --border:  #1e2f4a;
+    --blue:    #4a8eff;
+    --gold:    #f5a623;
+    --green:   #22c97a;
+    --red:     #ff4d6d;
+    --amber:   #f59e0b;
+    --text:    #e2eaf8;
+    --muted:   #5a7194;
+    --font-h:  'Syne', sans-serif;
+    --font-m:  'JetBrains Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-m);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Background grid ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(74,142,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(74,142,255,.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .wrap { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 0 24px 60px; }
+
+  /* ── Header ── */
+  header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 36px 0 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .logo-mark {
+    width: 10px; height: 44px;
+    background: linear-gradient(180deg, var(--blue), var(--gold));
+    border-radius: 3px;
+    margin-right: 14px;
+    flex-shrink: 0;
+  }
+  .header-left { display: flex; align-items: flex-end; }
+  .header-title { font-family: var(--font-h); }
+  .header-title h1 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 800; letter-spacing: -.5px;
+    color: var(--text);
+  }
+  .header-title p { font-size: .75rem; color: var(--muted); margin-top: 2px; letter-spacing: 2px; text-transform: uppercase; }
+  .header-right { display: flex; gap: 12px; align-items: center; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 6px 12px;
+    font-size: .72rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase;
+  }
+  .badge span { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  /* ── Stat cards ── */
+  .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+  @media(max-width:900px){ .stats-row { grid-template-columns: repeat(2,1fr); } }
+  @media(max-width:500px){ .stats-row { grid-template-columns: 1fr; } }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s, border-color .2s;
+  }
+  .stat-card:hover { transform: translateY(-3px); border-color: var(--blue); }
+  .stat-card::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--accent, var(--blue));
+  }
+  .stat-card.gold::after   { --accent: var(--gold); }
+  .stat-card.green::after  { --accent: var(--green); }
+  .stat-card.red::after    { --accent: var(--red); }
+  .stat-label { font-size: .68rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .stat-value { font-size: 2.2rem; font-weight: 700; line-height: 1; color: var(--text); font-family: var(--font-m); }
+  .stat-value.blue  { color: var(--blue); }
+  .stat-value.gold  { color: var(--gold); }
+  .stat-value.green { color: var(--green); }
+  .stat-value.red   { color: var(--red); }
+  .stat-sub { font-size: .7rem; color: var(--muted); margin-top: 8px; }
+
+  /* ── Charts row ── */
+  .charts-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .charts-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  @media(max-width:1000px){ .charts-grid, .charts-grid-3 { grid-template-columns: 1fr; } }
+
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+  }
+  .chart-card h3 {
+    font-family: var(--font-h);
+    font-size: .85rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 18px;
+  }
+  .chart-canvas-wrap { position: relative; }
+  canvas { max-width: 100%; }
+
+  /* ── Section heading ── */
+  .section-head {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px; margin-top: 16px;
+  }
+  .section-head h2 { font-family: var(--font-h); font-size: 1.1rem; font-weight: 700; }
+  .section-head::after { content:''; flex:1; height:1px; background: var(--border); }
+
+  /* ── Table controls ── */
+  .table-controls {
+    display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .search-box {
+    flex: 1; min-width: 220px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 14px;
+    color: var(--text); font-family: var(--font-m); font-size: .8rem;
+    outline: none; transition: border-color .2s;
+  }
+  .search-box:focus { border-color: var(--blue); }
+  .search-box::placeholder { color: var(--muted); }
+  select.filter-sel {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 14px;
+    color: var(--text); font-family: var(--font-m); font-size: .8rem;
+    outline: none; cursor: pointer;
+  }
+
+  /* ── Student table ── */
+  .table-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    overflow-x: auto;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: .78rem; min-width: 700px; }
+  thead tr { background: var(--surface); }
+  th {
+    padding: 12px 16px; text-align: left;
+    font-size: .65rem; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted); font-weight: 700; cursor: pointer;
+    user-select: none; white-space: nowrap;
+  }
+  th:hover { color: var(--blue); }
+  th .sort-arrow { margin-left: 4px; opacity: .4; }
+  th.sorted .sort-arrow { opacity: 1; color: var(--blue); }
+  tbody tr {
+    border-top: 1px solid var(--border);
+    transition: background .15s;
+  }
+  tbody tr:hover { background: rgba(74,142,255,.06); }
+  td { padding: 11px 16px; white-space: nowrap; }
+  .rank-num { color: var(--muted); font-size: .7rem; }
+  .student-name { font-weight: 700; color: var(--text); font-family: var(--font-h); font-size: .82rem; }
+  .sid { color: var(--muted); font-size: .7rem; margin-top: 1px; }
+  .gpa-val { font-weight: 700; font-size: .9rem; }
+  .pill {
+    display: inline-block; border-radius: 20px;
+    padding: 2px 10px; font-size: .65rem; font-weight: 700;
+    letter-spacing: .5px; text-transform: uppercase;
+  }
+  .pill.excellent  { background: rgba(74,142,255,.15); color: var(--blue); }
+  .pill.verygood   { background: rgba(34,201,122,.15); color: var(--green); }
+  .pill.good       { background: rgba(245,166,35,.15); color: var(--gold); }
+  .pill.average    { background: rgba(245,158,11,.12); color: var(--amber); }
+  .pill.needs      { background: rgba(255,77,109,.15); color: var(--red); }
+  .backlog-dot {
+    display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%; margin-right: 4px;
+  }
+  .att-bar-wrap { display: flex; align-items: center; gap: 8px; min-width: 90px; }
+  .att-bar-bg { flex:1; height:4px; background: var(--border); border-radius: 2px; }
+  .att-bar-fill { height: 4px; border-radius: 2px; }
+  .btn-expand {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); border-radius: 6px;
+    padding: 4px 10px; font-size: .7rem; cursor: pointer;
+    font-family: var(--font-m); transition: all .15s;
+  }
+  .btn-expand:hover { border-color: var(--blue); color: var(--blue); }
+
+  /* Row detail expand */
+  .expand-row td { padding: 0; border-top: none; }
+  .expand-inner {
+    padding: 16px 24px;
+    background: var(--surface);
+    display: none;
+  }
+  .expand-inner.open { display: block; }
+  .subj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 10px; }
+  .subj-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 14px;
+  }
+  .subj-name { font-size: .72rem; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+  .subj-marks { font-size: 1.4rem; font-weight: 700; line-height:1; }
+  .subj-meta { font-size: .68rem; color: var(--muted); margin-top: 4px; }
+  .subj-grade-pill {
+    display: inline-block; font-size: .65rem; font-weight: 700;
+    border-radius: 4px; padding: 1px 7px; margin-top: 4px;
+  }
+
+  /* ── Footer ── */
+  footer {
+    margin-top: 48px; padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: .7rem; color: var(--muted);
+    flex-wrap: wrap; gap: 10px;
+  }
+
+  /* ── Animations ── */
+  .fade-in { animation: fadeIn .5s ease both; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+  .fade-in:nth-child(1){animation-delay:.05s}
+  .fade-in:nth-child(2){animation-delay:.1s}
+  .fade-in:nth-child(3){animation-delay:.15s}
+  .fade-in:nth-child(4){animation-delay:.2s}
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-left">
+      <div class="logo-mark"></div>
+      <div class="header-title">
+        <h1>GPA Analytics Dashboard</h1>
+        <p>B.Tech · Semester 1 · Batch 2024–25</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="badge"><span></span> Live Data</div>
+      <div class="badge">60 Students</div>
+    </div>
+  </header>
+
+  <!-- STAT CARDS -->
+  <div class="stats-row">
+    <div class="stat-card fade-in">
+      <div class="stat-label">Class Average GPA</div>
+      <div class="stat-value blue" id="s-avg">—</div>
+      <div class="stat-sub">out of 10.00</div>
+    </div>
+    <div class="stat-card gold fade-in">
+      <div class="stat-label">Highest GPA</div>
+      <div class="stat-value gold" id="s-top">—</div>
+      <div class="stat-sub" id="s-top-name">—</div>
+    </div>
+    <div class="stat-card green fade-in">
+      <div class="stat-label">Pass Rate</div>
+      <div class="stat-value green" id="s-pass">—</div>
+      <div class="stat-sub">GPA ≥ 5.0</div>
+    </div>
+    <div class="stat-card red fade-in">
+      <div class="stat-label">Students at Risk</div>
+      <div class="stat-value red" id="s-risk">—</div>
+      <div class="stat-sub">Backlogs or Att &lt; 75%</div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 1 -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>GPA Distribution</h3>
+      <div class="chart-canvas-wrap"><canvas id="histChart" height="220"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Performance Bands</h3>
+      <div class="chart-canvas-wrap"><canvas id="pieChart" height="220"></canvas></div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 2 -->
+  <div class="charts-grid-3">
+    <div class="chart-card">
+      <h3>Top 10 Students</h3>
+      <div class="chart-canvas-wrap"><canvas id="topChart" height="260"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Attendance vs GPA</h3>
+      <div class="chart-canvas-wrap"><canvas id="scatterChart" height="260"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Subject Avg Marks</h3>
+      <div class="chart-canvas-wrap"><canvas id="subjChart" height="260"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="section-head"><h2>Student Records</h2></div>
+  <div class="table-controls">
+    <input class="search-box" id="searchBox" type="text" placeholder="Search by name or ID…"/>
+    <select class="filter-sel" id="perfFilter">
+      <option value="">All Performance</option>
+      <option>Excellent</option>
+      <option>Very Good</option>
+      <option>Good</option>
+      <option>Average</option>
+      <option>Needs Improvement</option>
+    </select>
+    <select class="filter-sel" id="riskFilter">
+      <option value="">All Students</option>
+      <option value="backlog">Has Backlog</option>
+      <option value="lowatt">Low Attendance</option>
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <table id="studentTable">
+      <thead>
+        <tr>
+          <th data-col="rank">Rank <span class="sort-arrow">↕</span></th>
+          <th data-col="name">Student <span class="sort-arrow">↕</span></th>
+          <th data-col="gpa" class="sorted">GPA <span class="sort-arrow">↓</span></th>
+          <th data-col="performance">Band <span class="sort-arrow">↕</span></th>
+          <th data-col="avgMarks">Avg Marks <span class="sort-arrow">↕</span></th>
+          <th data-col="backlogs">Backlogs <span class="sort-arrow">↕</span></th>
+          <th>Avg Att%</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+  <div style="font-size:.72rem;color:var(--muted);margin-top:10px;text-align:right;">
+    Showing <span id="rowCount">—</span> students · Click row arrow to expand subjects
+  </div>
+
+  <footer>
+    <span>GPA Analytics Dashboard · Generated by GPAAnalyzer MATLAB System</span>
+    <span>Batch 2024–25 · Semester 1 · 6 Subjects · 20 Credits</span>
+  </footer>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  EMBEDDED STUDENT DATA  (auto-generated by export_json.m)
+// ═══════════════════════════════════════════════════════
+const STUDENTS = [
+  {id:"S001",name:"Aarav Sharma",gpa:8.95,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:84.3,subjects:[{name:"Mathematics",credits:4,marks:88,gp:9,grade:"A+",att:92},{name:"Physics",credits:4,marks:76,gp:8,grade:"A",att:85},{name:"Chemistry",credits:3,marks:82,gp:9,grade:"A+",att:90},{name:"English",credits:2,marks:91,gp:10,grade:"O",att:95},{name:"Programming",credits:4,marks:95,gp:10,grade:"O",att:98},{name:"Eng. Drawing",credits:3,marks:74,gp:8,grade:"A",att:80}]},
+  {id:"S002",name:"Priya Nair",gpa:5.35,performance:"Average",backlogs:1,lowAttCount:2,avgMarks:59.2,subjects:[{name:"Mathematics",credits:4,marks:55,gp:6,grade:"B",att:70},{name:"Physics",credits:4,marks:48,gp:0,grade:"F",att:65},{name:"Chemistry",credits:3,marks:62,gp:7,grade:"B+",att:72},{name:"English",credits:2,marks:78,gp:8,grade:"A",att:88},{name:"Programming",credits:4,marks:60,gp:7,grade:"B+",att:75},{name:"Eng. Drawing",credits:3,marks:52,gp:6,grade:"B",att:68}]},
+  {id:"S003",name:"Rohit Verma",gpa:9.30,performance:"Excellent",backlogs:0,lowAttCount:0,avgMarks:88.3,subjects:[{name:"Mathematics",credits:4,marks:92,gp:10,grade:"O",att:96},{name:"Physics",credits:4,marks:89,gp:9,grade:"A+",att:94},{name:"Chemistry",credits:3,marks:85,gp:9,grade:"A+",att:91},{name:"English",credits:2,marks:79,gp:8,grade:"A",att:88},{name:"Programming",credits:4,marks:97,gp:10,grade:"O",att:99},{name:"Eng. Drawing",credits:3,marks:88,gp:9,grade:"A+",att:93}]},
+  {id:"S004",name:"Sneha Patel",gpa:7.60,performance:"Good",backlogs:0,lowAttCount:0,avgMarks:72.2,subjects:[{name:"Mathematics",credits:4,marks:67,gp:7,grade:"B+",att:82},{name:"Physics",credits:4,marks:71,gp:8,grade:"A",att:79},{name:"Chemistry",credits:3,marks:69,gp:7,grade:"B+",att:84},{name:"English",credits:2,marks:88,gp:9,grade:"A+",att:92},{name:"Programming",credits:4,marks:75,gp:8,grade:"A",att:86},{name:"Eng. Drawing",credits:3,marks:63,gp:7,grade:"B+",att:77}]},
+  {id:"S005",name:"Vikram Singh",gpa:1.80,performance:"Needs Improvement",backlogs:4,lowAttCount:6,avgMarks:44.7,subjects:[{name:"Mathematics",credits:4,marks:42,gp:0,grade:"F",att:60},{name:"Physics",credits:4,marks:38,gp:0,grade:"F",att:55},{name:"Chemistry",credits:3,marks:45,gp:0,grade:"F",att:62},{name:"English",credits:2,marks:55,gp:6,grade:"B",att:70},{name:"Programming",credits:4,marks:50,gp:6,grade:"B",att:65},{name:"Eng. Drawing",credits:3,marks:40,gp:0,grade:"F",att:58}]},
+  {id:"S006",name:"Ananya Reddy",gpa:8.80,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:83.3,subjects:[{name:"Mathematics",credits:4,marks:81,gp:9,grade:"A+",att:90},{name:"Physics",credits:4,marks:84,gp:9,grade:"A+",att:93},{name:"Chemistry",credits:3,marks:79,gp:8,grade:"A",att:88},{name:"English",credits:2,marks:93,gp:10,grade:"O",att:97},{name:"Programming",credits:4,marks:87,gp:9,grade:"A+",att:92},{name:"Eng. Drawing",credits:3,marks:76,gp:8,grade:"A",att:85}]},
+  {id:"S007",name:"Karan Mehta",gpa:6.75,performance:"Average",backlogs:0,lowAttCount:0,avgMarks:63.0,subjects:[{name:"Mathematics",credits:4,marks:60,gp:7,grade:"B+",att:74},{name:"Physics",credits:4,marks:58,gp:6,grade:"B",att:71},{name:"Chemistry",credits:3,marks:65,gp:7,grade:"B+",att:78},{name:"English",credits:2,marks:72,gp:8,grade:"A",att:83},{name:"Programming",credits:4,marks:68,gp:7,grade:"B+",att:79},{name:"Eng. Drawing",credits:3,marks:55,gp:6,grade:"B",att:69}]},
+  {id:"S008",name:"Divya Krishnan",gpa:8.30,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:76.7,subjects:[{name:"Mathematics",credits:4,marks:75,gp:8,grade:"A",att:86},{name:"Physics",credits:4,marks:70,gp:8,grade:"A",att:82},{name:"Chemistry",credits:3,marks:78,gp:8,grade:"A",att:88},{name:"English",credits:2,marks:85,gp:9,grade:"A+",att:91},{name:"Programming",credits:4,marks:80,gp:9,grade:"A+",att:89},{name:"Eng. Drawing",credits:3,marks:72,gp:8,grade:"A",att:83}]},
+  {id:"S009",name:"Arjun Gupta",gpa:9.75,performance:"Excellent",backlogs:0,lowAttCount:0,avgMarks:90.3,subjects:[{name:"Mathematics",credits:4,marks:94,gp:10,grade:"O",att:98},{name:"Physics",credits:4,marks:91,gp:10,grade:"O",att:96},{name:"Chemistry",credits:3,marks:88,gp:9,grade:"A+",att:94},{name:"English",credits:2,marks:82,gp:9,grade:"A+",att:90},{name:"Programming",credits:4,marks:96,gp:10,grade:"O",att:99},{name:"Eng. Drawing",credits:3,marks:90,gp:10,grade:"O",att:95}]},
+  {id:"S010",name:"Meera Iyer",gpa:6.60,performance:"Average",backlogs:0,lowAttCount:2,avgMarks:60.0,subjects:[{name:"Mathematics",credits:4,marks:53,gp:6,grade:"B",att:67},{name:"Physics",credits:4,marks:61,gp:7,grade:"B+",att:73},{name:"Chemistry",credits:3,marks:57,gp:6,grade:"B",att:70},{name:"English",credits:2,marks:74,gp:8,grade:"A",att:84},{name:"Programming",credits:4,marks:65,gp:7,grade:"B+",att:77},{name:"Eng. Drawing",credits:3,marks:50,gp:6,grade:"B",att:64}]},
+  {id:"S011",name:"Rahul Joshi",gpa:8.30,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:75.5,subjects:[{name:"Mathematics",credits:4,marks:77,gp:8,grade:"A",att:88},{name:"Physics",credits:4,marks:80,gp:9,grade:"A+",att:90},{name:"Chemistry",credits:3,marks:74,gp:8,grade:"A",att:85},{name:"English",credits:2,marks:68,gp:7,grade:"B+",att:80},{name:"Programming",credits:4,marks:83,gp:9,grade:"A+",att:91},{name:"Eng. Drawing",credits:3,marks:71,gp:8,grade:"A",att:82}]},
+  {id:"S012",name:"Tanvi Desai",gpa:1.90,performance:"Needs Improvement",backlogs:4,lowAttCount:5,avgMarks:49.5,subjects:[{name:"Mathematics",credits:4,marks:46,gp:0,grade:"F",att:63},{name:"Physics",credits:4,marks:44,gp:0,grade:"F",att:60},{name:"Chemistry",credits:3,marks:49,gp:0,grade:"F",att:66},{name:"English",credits:2,marks:62,gp:7,grade:"B+",att:75},{name:"Programming",credits:4,marks:55,gp:6,grade:"B",att:70},{name:"Eng. Drawing",credits:3,marks:41,gp:0,grade:"F",att:57}]},
+  {id:"S013",name:"Nikhil Bose",gpa:8.90,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:82.7,subjects:[{name:"Mathematics",credits:4,marks:86,gp:9,grade:"A+",att:93},{name:"Physics",credits:4,marks:83,gp:9,grade:"A+",att:91},{name:"Chemistry",credits:3,marks:80,gp:9,grade:"A+",att:89},{name:"English",credits:2,marks:76,gp:8,grade:"A",att:87},{name:"Programming",credits:4,marks:89,gp:9,grade:"A+",att:94},{name:"Eng. Drawing",credits:3,marks:82,gp:9,grade:"A+",att:90}]},
+  {id:"S014",name:"Kavya Menon",gpa:7.55,performance:"Good",backlogs:0,lowAttCount:0,avgMarks:68.7,subjects:[{name:"Mathematics",credits:4,marks:62,gp:7,grade:"B+",att:76},{name:"Physics",credits:4,marks:66,gp:7,grade:"B+",att:79},{name:"Chemistry",credits:3,marks:71,gp:8,grade:"A",att:83},{name:"English",credits:2,marks:80,gp:9,grade:"A+",att:89},{name:"Programming",credits:4,marks:73,gp:8,grade:"A",att:84},{name:"Eng. Drawing",credits:3,marks:60,gp:7,grade:"B+",att:74}]},
+  {id:"S015",name:"Siddharth Rao",gpa:0.00,performance:"Needs Improvement",backlogs:6,lowAttCount:6,avgMarks:40.0,subjects:[{name:"Mathematics",credits:4,marks:35,gp:0,grade:"F",att:50},{name:"Physics",credits:4,marks:40,gp:0,grade:"F",att:55},{name:"Chemistry",credits:3,marks:38,gp:0,grade:"F",att:52},{name:"English",credits:2,marks:48,gp:0,grade:"F",att:63},{name:"Programming",credits:4,marks:43,gp:0,grade:"F",att:58},{name:"Eng. Drawing",credits:3,marks:36,gp:0,grade:"F",att:50}]},
+  {id:"S016",name:"Pooja Pillai",gpa:9.45,performance:"Excellent",backlogs:0,lowAttCount:0,avgMarks:89.5,subjects:[{name:"Mathematics",credits:4,marks:90,gp:10,grade:"O",att:97},{name:"Physics",credits:4,marks:87,gp:9,grade:"A+",att:94},{name:"Chemistry",credits:3,marks:92,gp:10,grade:"O",att:98},{name:"English",credits:2,marks:95,gp:10,grade:"O",att:99},{name:"Programming",credits:4,marks:88,gp:9,grade:"A+",att:95},{name:"Eng. Drawing",credits:3,marks:85,gp:9,grade:"A+",att:92}]},
+  {id:"S017",name:"Aditya Kumar",gpa:6.75,performance:"Average",backlogs:0,lowAttCount:0,avgMarks:62.0,subjects:[{name:"Mathematics",credits:4,marks:58,gp:6,grade:"B",att:72},{name:"Physics",credits:4,marks:63,gp:7,grade:"B+",att:76},{name:"Chemistry",credits:3,marks:60,gp:7,grade:"B+",att:74},{name:"English",credits:2,marks:70,gp:8,grade:"A",att:82},{name:"Programming",credits:4,marks:67,gp:7,grade:"B+",att:79},{name:"Eng. Drawing",credits:3,marks:54,gp:6,grade:"B",att:68}]},
+  {id:"S018",name:"Shruti Ghosh",gpa:8.25,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:79.0,subjects:[{name:"Mathematics",credits:4,marks:79,gp:8,grade:"A",att:89},{name:"Physics",credits:4,marks:75,gp:8,grade:"A",att:86},{name:"Chemistry",credits:3,marks:82,gp:9,grade:"A+",att:91},{name:"English",credits:2,marks:88,gp:9,grade:"A+",att:94},{name:"Programming",credits:4,marks:77,gp:8,grade:"A",att:88},{name:"Eng. Drawing",credits:3,marks:73,gp:8,grade:"A",att:84}]},
+  {id:"S019",name:"Manish Tiwari",gpa:1.80,performance:"Needs Improvement",backlogs:4,lowAttCount:5,avgMarks:46.5,subjects:[{name:"Mathematics",credits:4,marks:44,gp:0,grade:"F",att:62},{name:"Physics",credits:4,marks:47,gp:0,grade:"F",att:65},{name:"Chemistry",credits:3,marks:41,gp:0,grade:"F",att:59},{name:"English",credits:2,marks:56,gp:6,grade:"B",att:71},{name:"Programming",credits:4,marks:52,gp:6,grade:"B",att:67},{name:"Eng. Drawing",credits:3,marks:39,gp:0,grade:"F",att:54}]},
+  {id:"S020",name:"Nisha Saxena",gpa:8.75,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:83.5,subjects:[{name:"Mathematics",credits:4,marks:83,gp:9,grade:"A+",att:92},{name:"Physics",credits:4,marks:78,gp:8,grade:"A",att:88},{name:"Chemistry",credits:3,marks:86,gp:9,grade:"A+",att:93},{name:"English",credits:2,marks:91,gp:10,grade:"O",att:97},{name:"Programming",credits:4,marks:84,gp:9,grade:"A+",att:92},{name:"Eng. Drawing",credits:3,marks:79,gp:8,grade:"A",att:89}]},
+  {id:"S021",name:"Amit Chauhan",gpa:7.70,performance:"Good",backlogs:0,lowAttCount:0,avgMarks:71.0,subjects:[{name:"Mathematics",credits:4,marks:70,gp:8,grade:"A",att:83},{name:"Physics",credits:4,marks:74,gp:8,grade:"A",att:86},{name:"Chemistry",credits:3,marks:68,gp:7,grade:"B+",att:80},{name:"English",credits:2,marks:77,gp:8,grade:"A",att:88},{name:"Programming",credits:4,marks:72,gp:8,grade:"A",att:84},{name:"Eng. Drawing",credits:3,marks:65,gp:7,grade:"B+",att:78}]},
+  {id:"S022",name:"Riya Malhotra",gpa:9.30,performance:"Excellent",backlogs:0,lowAttCount:0,avgMarks:88.3,subjects:[{name:"Mathematics",credits:4,marks:89,gp:9,grade:"A+",att:95},{name:"Physics",credits:4,marks:86,gp:9,grade:"A+",att:93},{name:"Chemistry",credits:3,marks:83,gp:9,grade:"A+",att:91},{name:"English",credits:2,marks:94,gp:10,grade:"O",att:98},{name:"Programming",credits:4,marks:91,gp:10,grade:"O",att:96},{name:"Eng. Drawing",credits:3,marks:87,gp:9,grade:"A+",att:93}]},
+  {id:"S023",name:"Suresh Banerjee",gpa:5.20,performance:"Average",backlogs:1,lowAttCount:0,avgMarks:54.7,subjects:[{name:"Mathematics",credits:4,marks:50,gp:6,grade:"B",att:65},{name:"Physics",credits:4,marks:53,gp:6,grade:"B",att:68},{name:"Chemistry",credits:3,marks:56,gp:6,grade:"B",att:72},{name:"English",credits:2,marks:64,gp:7,grade:"B+",att:77},{name:"Programming",credits:4,marks:58,gp:6,grade:"B",att:74},{name:"Eng. Drawing",credits:3,marks:47,gp:0,grade:"F",att:62}]},
+  {id:"S024",name:"Deepika Varma",gpa:7.75,performance:"Good",backlogs:0,lowAttCount:0,avgMarks:72.3,subjects:[{name:"Mathematics",credits:4,marks:73,gp:8,grade:"A",att:85},{name:"Physics",credits:4,marks:69,gp:7,grade:"B+",att:81},{name:"Chemistry",credits:3,marks:75,gp:8,grade:"A",att:87},{name:"English",credits:2,marks:82,gp:9,grade:"A+",att:92},{name:"Programming",credits:4,marks:70,gp:8,grade:"A",att:83},{name:"Eng. Drawing",credits:3,marks:67,gp:7,grade:"B+",att:79}]},
+  {id:"S025",name:"Rajesh Pandey",gpa:0.60,performance:"Needs Improvement",backlogs:5,lowAttCount:6,avgMarks:40.3,subjects:[{name:"Mathematics",credits:4,marks:37,gp:0,grade:"F",att:53},{name:"Physics",credits:4,marks:42,gp:0,grade:"F",att:58},{name:"Chemistry",credits:3,marks:35,gp:0,grade:"F",att:50},{name:"English",credits:2,marks:50,gp:6,grade:"B",att:66},{name:"Programming",credits:4,marks:45,gp:0,grade:"F",att:61},{name:"Eng. Drawing",credits:3,marks:33,gp:0,grade:"F",att:48}]},
+  {id:"S026",name:"Ankita Sinha",gpa:9.85,performance:"Excellent",backlogs:0,lowAttCount:0,avgMarks:93.0,subjects:[{name:"Mathematics",credits:4,marks:95,gp:10,grade:"O",att:99},{name:"Physics",credits:4,marks:92,gp:10,grade:"O",att:97},{name:"Chemistry",credits:3,marks:90,gp:10,grade:"O",att:96},{name:"English",credits:2,marks:97,gp:10,grade:"O",att:100},{name:"Programming",credits:4,marks:94,gp:10,grade:"O",att:98},{name:"Eng. Drawing",credits:3,marks:89,gp:9,grade:"A+",att:95}]},
+  {id:"S027",name:"Vivek Aggarwal",gpa:6.95,performance:"Average",backlogs:0,lowAttCount:0,avgMarks:64.0,subjects:[{name:"Mathematics",credits:4,marks:64,gp:7,grade:"B+",att:78},{name:"Physics",credits:4,marks:60,gp:7,grade:"B+",att:75},{name:"Chemistry",credits:3,marks:67,gp:7,grade:"B+",att:80},{name:"English",credits:2,marks:73,gp:8,grade:"A",att:85},{name:"Programming",credits:4,marks:62,gp:7,grade:"B+",att:77},{name:"Eng. Drawing",credits:3,marks:58,gp:6,grade:"B",att:72}]},
+  {id:"S028",name:"Sonali Chatterjee",gpa:8.50,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:79.5,subjects:[{name:"Mathematics",credits:4,marks:78,gp:8,grade:"A",att:89},{name:"Physics",credits:4,marks:82,gp:9,grade:"A+",att:91},{name:"Chemistry",credits:3,marks:76,gp:8,grade:"A",att:87},{name:"English",credits:2,marks:86,gp:9,grade:"A+",att:93},{name:"Programming",credits:4,marks:81,gp:9,grade:"A+",att:90},{name:"Eng. Drawing",credits:3,marks:74,gp:8,grade:"A",att:86}]},
+  {id:"S029",name:"Harsh Mishra",gpa:0.60,performance:"Needs Improvement",backlogs:5,lowAttCount:6,avgMarks:45.0,subjects:[{name:"Mathematics",credits:4,marks:43,gp:0,grade:"F",att:61},{name:"Physics",credits:4,marks:46,gp:0,grade:"F",att:64},{name:"Chemistry",credits:3,marks:40,gp:0,grade:"F",att:58},{name:"English",credits:2,marks:54,gp:6,grade:"B",att:70},{name:"Programming",credits:4,marks:49,gp:0,grade:"F",att:65},{name:"Eng. Drawing",credits:3,marks:38,gp:0,grade:"F",att:53}]},
+  {id:"S030",name:"Preethi Nambiar",gpa:9.10,performance:"Excellent",backlogs:0,lowAttCount:0,avgMarks:85.2,subjects:[{name:"Mathematics",credits:4,marks:87,gp:9,grade:"A+",att:94},{name:"Physics",credits:4,marks:84,gp:9,grade:"A+",att:92},{name:"Chemistry",credits:3,marks:81,gp:9,grade:"A+",att:90},{name:"English",credits:2,marks:90,gp:10,grade:"O",att:96},{name:"Programming",credits:4,marks:86,gp:9,grade:"A+",att:93},{name:"Eng. Drawing",credits:3,marks:83,gp:9,grade:"A+",att:91}]},
+  {id:"S031",name:"Gaurav Tripathi",gpa:6.30,performance:"Average",backlogs:0,lowAttCount:0,avgMarks:57.5,subjects:[{name:"Mathematics",credits:4,marks:56,gp:6,grade:"B",att:71},{name:"Physics",credits:4,marks:59,gp:6,grade:"B",att:73},{name:"Chemistry",credits:3,marks:53,gp:6,grade:"B",att:68},{name:"English",credits:2,marks:66,gp:7,grade:"B+",att:79},{name:"Programming",credits:4,marks:61,gp:7,grade:"B+",att:76},{name:"Eng. Drawing",credits:3,marks:50,gp:6,grade:"B",att:65}]},
+  {id:"S032",name:"Ishita Kapoor",gpa:8.95,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:84.3,subjects:[{name:"Mathematics",credits:4,marks:84,gp:9,grade:"A+",att:93},{name:"Physics",credits:4,marks:80,gp:9,grade:"A+",att:90},{name:"Chemistry",credits:3,marks:87,gp:9,grade:"A+",att:94},{name:"English",credits:2,marks:92,gp:10,grade:"O",att:97},{name:"Programming",credits:4,marks:85,gp:9,grade:"A+",att:93},{name:"Eng. Drawing",credits:3,marks:78,gp:8,grade:"A",att:88}]},
+  {id:"S033",name:"Akash Dubey",gpa:3.10,performance:"Needs Improvement",backlogs:3,lowAttCount:2,avgMarks:50.5,subjects:[{name:"Mathematics",credits:4,marks:48,gp:0,grade:"F",att:64},{name:"Physics",credits:4,marks:51,gp:6,grade:"B",att:67},{name:"Chemistry",credits:3,marks:46,gp:0,grade:"F",att:62},{name:"English",credits:2,marks:60,gp:7,grade:"B+",att:74},{name:"Programming",credits:4,marks:55,gp:6,grade:"B",att:70},{name:"Eng. Drawing",credits:3,marks:43,gp:0,grade:"F",att:59}]},
+  {id:"S034",name:"Preeti Kulkarni",gpa:8.10,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:75.8,subjects:[{name:"Mathematics",credits:4,marks:76,gp:8,grade:"A",att:87},{name:"Physics",credits:4,marks:72,gp:8,grade:"A",att:84},{name:"Chemistry",credits:3,marks:79,gp:8,grade:"A",att:89},{name:"English",credits:2,marks:84,gp:9,grade:"A+",att:93},{name:"Programming",credits:4,marks:74,gp:8,grade:"A",att:86},{name:"Eng. Drawing",credits:3,marks:70,gp:8,grade:"A",att:82}]},
+  {id:"S035",name:"Sameer Qureshi",gpa:0.60,performance:"Needs Improvement",backlogs:5,lowAttCount:6,avgMarks:41.5,subjects:[{name:"Mathematics",credits:4,marks:39,gp:0,grade:"F",att:56},{name:"Physics",credits:4,marks:36,gp:0,grade:"F",att:52},{name:"Chemistry",credits:3,marks:42,gp:0,grade:"F",att:59},{name:"English",credits:2,marks:52,gp:6,grade:"B",att:68},{name:"Programming",credits:4,marks:46,gp:0,grade:"F",att:63},{name:"Eng. Drawing",credits:3,marks:34,gp:0,grade:"F",att:50}]},
+  {id:"S036",name:"Lavanya Subramaniam",gpa:9.65,performance:"Excellent",backlogs:0,lowAttCount:0,avgMarks:90.7,subjects:[{name:"Mathematics",credits:4,marks:91,gp:10,grade:"O",att:97},{name:"Physics",credits:4,marks:88,gp:9,grade:"A+",att:95},{name:"Chemistry",credits:3,marks:93,gp:10,grade:"O",att:98},{name:"English",credits:2,marks:96,gp:10,grade:"O",att:100},{name:"Programming",credits:4,marks:90,gp:10,grade:"O",att:96},{name:"Eng. Drawing",credits:3,marks:86,gp:9,grade:"A+",att:94}]},
+  {id:"S037",name:"Yash Choudhury",gpa:7.30,performance:"Good",backlogs:0,lowAttCount:0,avgMarks:67.3,subjects:[{name:"Mathematics",credits:4,marks:66,gp:7,grade:"B+",att:80},{name:"Physics",credits:4,marks:70,gp:8,grade:"A",att:83},{name:"Chemistry",credits:3,marks:63,gp:7,grade:"B+",att:77},{name:"English",credits:2,marks:75,gp:8,grade:"A",att:87},{name:"Programming",credits:4,marks:69,gp:7,grade:"B+",att:82},{name:"Eng. Drawing",credits:3,marks:61,gp:7,grade:"B+",att:76}]},
+  {id:"S038",name:"Bhavna Sharma",gpa:9.00,performance:"Excellent",backlogs:0,lowAttCount:0,avgMarks:83.7,subjects:[{name:"Mathematics",credits:4,marks:85,gp:9,grade:"A+",att:93},{name:"Physics",credits:4,marks:81,gp:9,grade:"A+",att:91},{name:"Chemistry",credits:3,marks:84,gp:9,grade:"A+",att:92},{name:"English",credits:2,marks:89,gp:9,grade:"A+",att:96},{name:"Programming",credits:4,marks:83,gp:9,grade:"A+",att:92},{name:"Eng. Drawing",credits:3,marks:80,gp:9,grade:"A+",att:90}]},
+  {id:"S039",name:"Tarun Saxena",gpa:5.20,performance:"Average",backlogs:1,lowAttCount:2,avgMarks:55.3,subjects:[{name:"Mathematics",credits:4,marks:54,gp:6,grade:"B",att:69},{name:"Physics",credits:4,marks:57,gp:6,grade:"B",att:72},{name:"Chemistry",credits:3,marks:51,gp:6,grade:"B",att:66},{name:"English",credits:2,marks:63,gp:7,grade:"B+",att:77},{name:"Programming",credits:4,marks:59,gp:6,grade:"B",att:74},{name:"Eng. Drawing",credits:3,marks:48,gp:0,grade:"F",att:63}]},
+  {id:"S040",name:"Roshni Menon",gpa:8.45,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:78.5,subjects:[{name:"Mathematics",credits:4,marks:80,gp:9,grade:"A+",att:91},{name:"Physics",credits:4,marks:77,gp:8,grade:"A",att:88},{name:"Chemistry",credits:3,marks:83,gp:9,grade:"A+",att:92},{name:"English",credits:2,marks:87,gp:9,grade:"A+",att:95},{name:"Programming",credits:4,marks:79,gp:8,grade:"A",att:90},{name:"Eng. Drawing",credits:3,marks:75,gp:8,grade:"A",att:86}]},
+  {id:"S041",name:"Chirag Patel",gpa:6.80,performance:"Average",backlogs:0,lowAttCount:0,avgMarks:62.7,subjects:[{name:"Mathematics",credits:4,marks:61,gp:7,grade:"B+",att:75},{name:"Physics",credits:4,marks:64,gp:7,grade:"B+",att:78},{name:"Chemistry",credits:3,marks:58,gp:6,grade:"B",att:72},{name:"English",credits:2,marks:71,gp:8,grade:"A",att:84},{name:"Programming",credits:4,marks:66,gp:7,grade:"B+",att:80},{name:"Eng. Drawing",credits:3,marks:56,gp:6,grade:"B",att:70}]},
+  {id:"S042",name:"Swati Agarwal",gpa:9.85,performance:"Excellent",backlogs:0,lowAttCount:0,avgMarks:92.7,subjects:[{name:"Mathematics",credits:4,marks:93,gp:10,grade:"O",att:98},{name:"Physics",credits:4,marks:90,gp:10,grade:"O",att:96},{name:"Chemistry",credits:3,marks:95,gp:10,grade:"O",att:99},{name:"English",credits:2,marks:98,gp:10,grade:"O",att:100},{name:"Programming",credits:4,marks:92,gp:10,grade:"O",att:97},{name:"Eng. Drawing",credits:3,marks:88,gp:9,grade:"A+",att:95}]},
+  {id:"S043",name:"Lokesh Yadav",gpa:2.70,performance:"Needs Improvement",backlogs:3,lowAttCount:4,avgMarks:48.7,subjects:[{name:"Mathematics",credits:4,marks:47,gp:0,grade:"F",att:63},{name:"Physics",credits:4,marks:43,gp:0,grade:"F",att:59},{name:"Chemistry",credits:3,marks:50,gp:6,grade:"B",att:65},{name:"English",credits:2,marks:58,gp:6,grade:"B",att:73},{name:"Programming",credits:4,marks:53,gp:6,grade:"B",att:68},{name:"Eng. Drawing",credits:3,marks:41,gp:0,grade:"F",att:57}]},
+  {id:"S044",name:"Harini Rajan",gpa:7.95,performance:"Good",backlogs:0,lowAttCount:0,avgMarks:75.3,subjects:[{name:"Mathematics",credits:4,marks:74,gp:8,grade:"A",att:86},{name:"Physics",credits:4,marks:78,gp:8,grade:"A",att:89},{name:"Chemistry",credits:3,marks:72,gp:8,grade:"A",att:84},{name:"English",credits:2,marks:83,gp:9,grade:"A+",att:92},{name:"Programming",credits:4,marks:76,gp:8,grade:"A",att:88},{name:"Eng. Drawing",credits:3,marks:69,gp:7,grade:"B+",att:81}]},
+  {id:"S045",name:"Devendra Rawat",gpa:0.60,performance:"Needs Improvement",backlogs:5,lowAttCount:6,avgMarks:43.0,subjects:[{name:"Mathematics",credits:4,marks:41,gp:0,grade:"F",att:58},{name:"Physics",credits:4,marks:44,gp:0,grade:"F",att:61},{name:"Chemistry",credits:3,marks:38,gp:0,grade:"F",att:55},{name:"English",credits:2,marks:53,gp:6,grade:"B",att:69},{name:"Programming",credits:4,marks:47,gp:0,grade:"F",att:63},{name:"Eng. Drawing",credits:3,marks:36,gp:0,grade:"F",att:52}]},
+  {id:"S046",name:"Manya Singh",gpa:8.75,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:82.2,subjects:[{name:"Mathematics",credits:4,marks:82,gp:9,grade:"A+",att:92},{name:"Physics",credits:4,marks:79,gp:8,grade:"A",att:90},{name:"Chemistry",credits:3,marks:85,gp:9,grade:"A+",att:93},{name:"English",credits:2,marks:90,gp:10,grade:"O",att:97},{name:"Programming",credits:4,marks:80,gp:9,grade:"A+",att:91},{name:"Eng. Drawing",credits:3,marks:77,gp:8,grade:"A",att:88}]},
+  {id:"S047",name:"Parth Shah",gpa:6.50,performance:"Average",backlogs:0,lowAttCount:0,avgMarks:59.3,subjects:[{name:"Mathematics",credits:4,marks:57,gp:6,grade:"B",att:72},{name:"Physics",credits:4,marks:61,gp:7,grade:"B+",att:76},{name:"Chemistry",credits:3,marks:55,gp:6,grade:"B",att:70},{name:"English",credits:2,marks:68,gp:7,grade:"B+",att:81},{name:"Programming",credits:4,marks:63,gp:7,grade:"B+",att:77},{name:"Eng. Drawing",credits:3,marks:52,gp:6,grade:"B",att:67}]},
+  {id:"S048",name:"Kritika Mishra",gpa:9.10,performance:"Excellent",backlogs:0,lowAttCount:0,avgMarks:86.2,subjects:[{name:"Mathematics",credits:4,marks:88,gp:9,grade:"A+",att:95},{name:"Physics",credits:4,marks:85,gp:9,grade:"A+",att:93},{name:"Chemistry",credits:3,marks:81,gp:9,grade:"A+",att:91},{name:"English",credits:2,marks:92,gp:10,grade:"O",att:97},{name:"Programming",credits:4,marks:87,gp:9,grade:"A+",att:94},{name:"Eng. Drawing",credits:3,marks:84,gp:9,grade:"A+",att:92}]},
+  {id:"S049",name:"Uday Naik",gpa:1.80,performance:"Needs Improvement",backlogs:4,lowAttCount:5,avgMarks:47.5,subjects:[{name:"Mathematics",credits:4,marks:45,gp:0,grade:"F",att:62},{name:"Physics",credits:4,marks:49,gp:0,grade:"F",att:66},{name:"Chemistry",credits:3,marks:43,gp:0,grade:"F",att:60},{name:"English",credits:2,marks:57,gp:6,grade:"B",att:72},{name:"Programming",credits:4,marks:51,gp:6,grade:"B",att:67},{name:"Eng. Drawing",credits:3,marks:40,gp:0,grade:"F",att:56}]},
+  {id:"S050",name:"Sarita Jain",gpa:7.55,performance:"Good",backlogs:0,lowAttCount:0,avgMarks:71.0,subjects:[{name:"Mathematics",credits:4,marks:71,gp:8,grade:"A",att:84},{name:"Physics",credits:4,marks:67,gp:7,grade:"B+",att:80},{name:"Chemistry",credits:3,marks:74,gp:8,grade:"A",att:86},{name:"English",credits:2,marks:81,gp:9,grade:"A+",att:91},{name:"Programming",credits:4,marks:69,gp:7,grade:"B+",att:82},{name:"Eng. Drawing",credits:3,marks:64,gp:7,grade:"B+",att:78}]},
+  {id:"S051",name:"Kartik Pillai",gpa:9.90,performance:"Excellent",backlogs:0,lowAttCount:0,avgMarks:93.0,subjects:[{name:"Mathematics",credits:4,marks:96,gp:10,grade:"O",att:100},{name:"Physics",credits:4,marks:93,gp:10,grade:"O",att:98},{name:"Chemistry",credits:3,marks:91,gp:10,grade:"O",att:97},{name:"English",credits:2,marks:88,gp:9,grade:"A+",att:95},{name:"Programming",credits:4,marks:98,gp:10,grade:"O",att:100},{name:"Eng. Drawing",credits:3,marks:92,gp:10,grade:"O",att:97}]},
+  {id:"S052",name:"Neha Rastogi",gpa:6.55,performance:"Average",backlogs:0,lowAttCount:0,avgMarks:60.5,subjects:[{name:"Mathematics",credits:4,marks:59,gp:6,grade:"B",att:74},{name:"Physics",credits:4,marks:55,gp:6,grade:"B",att:70},{name:"Chemistry",credits:3,marks:62,gp:7,grade:"B+",att:76},{name:"English",credits:2,marks:70,gp:8,grade:"A",att:83},{name:"Programming",credits:4,marks:64,gp:7,grade:"B+",att:78},{name:"Eng. Drawing",credits:3,marks:53,gp:6,grade:"B",att:68}]},
+  {id:"S053",name:"Suraj Tomar",gpa:0.00,performance:"Needs Improvement",backlogs:6,lowAttCount:6,avgMarks:36.2,subjects:[{name:"Mathematics",credits:4,marks:33,gp:0,grade:"F",att:50},{name:"Physics",credits:4,marks:37,gp:0,grade:"F",att:54},{name:"Chemistry",credits:3,marks:30,gp:0,grade:"F",att:48},{name:"English",credits:2,marks:46,gp:0,grade:"F",att:62},{name:"Programming",credits:4,marks:40,gp:0,grade:"F",att:57},{name:"Eng. Drawing",credits:3,marks:31,gp:0,grade:"F",att:49}]},
+  {id:"S054",name:"Varsha Nair",gpa:8.30,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:78.3,subjects:[{name:"Mathematics",credits:4,marks:77,gp:8,grade:"A",att:88},{name:"Physics",credits:4,marks:81,gp:9,grade:"A+",att:91},{name:"Chemistry",credits:3,marks:75,gp:8,grade:"A",att:87},{name:"English",credits:2,marks:85,gp:9,grade:"A+",att:94},{name:"Programming",credits:4,marks:79,gp:8,grade:"A",att:89},{name:"Eng. Drawing",credits:3,marks:73,gp:8,grade:"A",att:85}]},
+  {id:"S055",name:"Omkar Kulkarni",gpa:7.10,performance:"Good",backlogs:0,lowAttCount:0,avgMarks:66.0,subjects:[{name:"Mathematics",credits:4,marks:65,gp:7,grade:"B+",att:79},{name:"Physics",credits:4,marks:68,gp:7,grade:"B+",att:82},{name:"Chemistry",credits:3,marks:62,gp:7,grade:"B+",att:76},{name:"English",credits:2,marks:74,gp:8,grade:"A",att:86},{name:"Programming",credits:4,marks:67,gp:7,grade:"B+",att:81},{name:"Eng. Drawing",credits:3,marks:60,gp:7,grade:"B+",att:75}]},
+  {id:"S056",name:"Falguni Mehta",gpa:9.10,performance:"Excellent",backlogs:0,lowAttCount:0,avgMarks:85.8,subjects:[{name:"Mathematics",credits:4,marks:86,gp:9,grade:"A+",att:94},{name:"Physics",credits:4,marks:82,gp:9,grade:"A+",att:92},{name:"Chemistry",credits:3,marks:88,gp:9,grade:"A+",att:95},{name:"English",credits:2,marks:93,gp:10,grade:"O",att:98},{name:"Programming",credits:4,marks:85,gp:9,grade:"A+",att:93},{name:"Eng. Drawing",credits:3,marks:81,gp:9,grade:"A+",att:91}]},
+  {id:"S057",name:"Akshay Sharma",gpa:4.30,performance:"Needs Improvement",backlogs:2,lowAttCount:2,avgMarks:53.7,subjects:[{name:"Mathematics",credits:4,marks:52,gp:6,grade:"B",att:67},{name:"Physics",credits:4,marks:56,gp:6,grade:"B",att:71},{name:"Chemistry",credits:3,marks:49,gp:0,grade:"F",att:65},{name:"English",credits:2,marks:62,gp:7,grade:"B+",att:77},{name:"Programming",credits:4,marks:57,gp:6,grade:"B",att:73},{name:"Eng. Drawing",credits:3,marks:46,gp:0,grade:"F",att:62}]},
+  {id:"S058",name:"Megha Pillai",gpa:9.50,performance:"Excellent",backlogs:0,lowAttCount:0,avgMarks:89.5,subjects:[{name:"Mathematics",credits:4,marks:90,gp:10,grade:"O",att:97},{name:"Physics",credits:4,marks:86,gp:9,grade:"A+",att:94},{name:"Chemistry",credits:3,marks:89,gp:9,grade:"A+",att:96},{name:"English",credits:2,marks:94,gp:10,grade:"O",att:99},{name:"Programming",credits:4,marks:91,gp:10,grade:"O",att:97},{name:"Eng. Drawing",credits:3,marks:87,gp:9,grade:"A+",att:94}]},
+  {id:"S059",name:"Dinesh Rawat",gpa:7.50,performance:"Good",backlogs:0,lowAttCount:0,avgMarks:69.2,subjects:[{name:"Mathematics",credits:4,marks:68,gp:7,grade:"B+",att:81},{name:"Physics",credits:4,marks:72,gp:8,grade:"A",att:84},{name:"Chemistry",credits:3,marks:66,gp:7,grade:"B+",att:79},{name:"English",credits:2,marks:76,gp:8,grade:"A",att:88},{name:"Programming",credits:4,marks:70,gp:8,grade:"A",att:83},{name:"Eng. Drawing",credits:3,marks:63,gp:7,grade:"B+",att:77}]},
+  {id:"S060",name:"Anushka Bhatt",gpa:8.75,performance:"Very Good",backlogs:0,lowAttCount:0,avgMarks:83.0,subjects:[{name:"Mathematics",credits:4,marks:83,gp:9,grade:"A+",att:93},{name:"Physics",credits:4,marks:79,gp:8,grade:"A",att:90},{name:"Chemistry",credits:3,marks:86,gp:9,grade:"A+",att:94},{name:"English",credits:2,marks:91,gp:10,grade:"O",att:97},{name:"Programming",credits:4,marks:82,gp:9,grade:"A+",att:92},{name:"Eng. Drawing",credits:3,marks:77,gp:8,grade:"A",att:88}]}
+];
+
+// ═══════════════════════════════════════════════════════
+//  CHART.JS DEFAULTS
+// ═══════════════════════════════════════════════════════
+Chart.defaults.color = '#5a7194';
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.font.size = 11;
+
+const COLORS = {
+  blue:  '#4a8eff', gold: '#f5a623', green: '#22c97a',
+  red:   '#ff4d6d', amber: '#f59e0b', purple: '#a78bfa',
+  grid:  'rgba(30,47,74,.6)'
+};
+
+// ═══════════════════════════════════════════════════════
+//  COMPUTE STATS
+// ═══════════════════════════════════════════════════════
+const gpas = STUDENTS.map(s => s.gpa);
+const classAvg = gpas.reduce((a,b)=>a+b,0)/gpas.length;
+const topStudent = STUDENTS.reduce((a,b)=>a.gpa>b.gpa?a:b);
+const passRate = STUDENTS.filter(s=>s.gpa>=5).length / STUDENTS.length * 100;
+const atRisk   = STUDENTS.filter(s=>s.backlogs>0||s.lowAttCount>0).length;
+
+// ═══════════════════════════════════════════════════════
+//  ANIMATED COUNTER
+// ═══════════════════════════════════════════════════════
+function animateCounter(el, target, decimals=2, suffix='') {
+  let start = 0, dur = 1200, step = 16;
+  const inc = target / (dur/step);
+  const timer = setInterval(()=>{
+    start = Math.min(start+inc, target);
+    el.textContent = start.toFixed(decimals) + suffix;
+    if(start>=target) clearInterval(timer);
+  }, step);
+}
+
+// Fill stat cards
+animateCounter(document.getElementById('s-avg'), classAvg);
+animateCounter(document.getElementById('s-top'), topStudent.gpa);
+animateCounter(document.getElementById('s-pass'), passRate, 1, '%');
+document.getElementById('s-risk').textContent = atRisk;
+document.getElementById('s-top-name').textContent = topStudent.name;
+
+// ═══════════════════════════════════════════════════════
+//  CHART 1 — GPA Histogram
+// ═══════════════════════════════════════════════════════
+(()=>{
+  const bins = [0,1,2,3,4,5,6,7,8,9,10];
+  const labels = bins.slice(0,-1).map((b,i)=>`${b}–${bins[i+1]}`);
+  const counts = new Array(bins.length-1).fill(0);
+  gpas.forEach(g=>{ const i=Math.min(Math.floor(g),9); counts[i]++; });
+  const bgColors = counts.map((_,i)=>
+    i<=4 ? 'rgba(255,77,109,.7)' : i<=6 ? 'rgba(245,158,11,.7)' : 'rgba(34,201,122,.7)'
+  );
+  new Chart(document.getElementById('histChart'),{
+    type:'bar',
+    data:{ labels, datasets:[{ data:counts, backgroundColor:bgColors, borderRadius:4, borderSkipped:false }]},
+    options:{
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.raw} students`}} },
+      scales:{
+        x:{ grid:{color:COLORS.grid} },
+        y:{ grid:{color:COLORS.grid}, ticks:{stepSize:1}, beginAtZero:true }
+      },
+      animation:{ duration:1000, easing:'easeOutQuart' }
+    }
+  });
+})();
+
+// ═══════════════════════════════════════════════════════
+//  CHART 2 — Performance Pie
+// ═══════════════════════════════════════════════════════
+(()=>{
+  const bands = ['Excellent','Very Good','Good','Average','Needs Improvement'];
+  const counts = bands.map(b=>STUDENTS.filter(s=>s.performance===b).length);
+  const colors = [COLORS.blue, COLORS.green, COLORS.gold, COLORS.amber, COLORS.red];
+  new Chart(document.getElementById('pieChart'),{
+    type:'doughnut',
+    data:{ labels:bands, datasets:[{ data:counts, backgroundColor:colors, borderWidth:2, borderColor:'#0d1626', hoverOffset:8 }]},
+    options:{
+      plugins:{
+        legend:{ position:'bottom', labels:{ padding:14, boxWidth:10 } },
+        tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw} students`}}
+      },
+      animation:{ duration:1000, animateRotate:true }
+    }
+  });
+})();
+
+// ═══════════════════════════════════════════════════════
+//  CHART 3 — Top 10 Bar
+// ═══════════════════════════════════════════════════════
+(()=>{
+  const sorted = [...STUDENTS].sort((a,b)=>b.gpa-a.gpa).slice(0,10);
+  const names  = sorted.map(s=>s.name.split(' ')[0]);
+  const vals   = sorted.map(s=>s.gpa);
+  new Chart(document.getElementById('topChart'),{
+    type:'bar',
+    data:{ labels:names, datasets:[{
+      data:vals,
+      backgroundColor: vals.map((_,i)=>i===0?COLORS.gold:COLORS.blue),
+      borderRadius:4, borderSkipped:false
+    }]},
+    options:{
+      indexAxis:'y',
+      plugins:{ legend:{display:false} },
+      scales:{
+        x:{ grid:{color:COLORS.grid}, min:8.5, max:10.2 },
+        y:{ grid:{color:COLORS.grid} }
+      },
+      animation:{ duration:1000 }
+    }
+  });
+})();
+
+// ═══════════════════════════════════════════════════════
+//  CHART 4 — Attendance vs GPA Scatter
+// ═══════════════════════════════════════════════════════
+(()=>{
+  const data = STUDENTS.map(s=>({
+    x: s.subjects.reduce((sum,sub)=>sum+sub.att,0)/s.subjects.length,
+    y: s.gpa
+  }));
+  const pointColors = STUDENTS.map(s=>{
+    if(s.gpa>=9) return COLORS.blue;
+    if(s.gpa>=8) return COLORS.green;
+    if(s.gpa>=6) return COLORS.gold;
+    if(s.gpa>=5) return COLORS.amber;
+    return COLORS.red;
+  });
+  new Chart(document.getElementById('scatterChart'),{
+    type:'scatter',
+    data:{ datasets:[{ data, backgroundColor:pointColors, pointRadius:5, pointHoverRadius:7 }]},
+    options:{
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{
+        label:c=>`Att: ${c.parsed.x.toFixed(0)}%  GPA: ${c.parsed.y.toFixed(2)}`
+      }}},
+      scales:{
+        x:{ grid:{color:COLORS.grid}, title:{display:true,text:'Avg Attendance %'}, min:45, max:102 },
+        y:{ grid:{color:COLORS.grid}, title:{display:true,text:'GPA'}, min:0, max:10.5 }
+      },
+      animation:{duration:800}
+    }
+  });
+})();
+
+// ═══════════════════════════════════════════════════════
+//  CHART 5 — Subject Average Marks
+// ═══════════════════════════════════════════════════════
+(()=>{
+  const subjNames = STUDENTS[0].subjects.map(s=>s.name.replace('Eng. ','Eng.\n'));
+  const avgs = subjNames.map((_,i)=>{
+    const sum = STUDENTS.reduce((acc,s)=>acc+s.subjects[i].marks,0);
+    return (sum/STUDENTS.length).toFixed(1);
+  });
+  const colors = [COLORS.blue,COLORS.purple,COLORS.green,COLORS.gold,COLORS.red,COLORS.amber];
+  new Chart(document.getElementById('subjChart'),{
+    type:'bar',
+    data:{ labels:STUDENTS[0].subjects.map(s=>s.name), datasets:[{
+      data:avgs, backgroundColor:colors, borderRadius:4, borderSkipped:false
+    }]},
+    options:{
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>`Avg: ${c.raw} marks`}} },
+      scales:{
+        x:{ grid:{color:COLORS.grid}, ticks:{font:{size:9}} },
+        y:{ grid:{color:COLORS.grid}, min:30, max:100 }
+      },
+      animation:{duration:1000}
+    }
+  });
+})();
+
+// ═══════════════════════════════════════════════════════
+//  TABLE
+// ═══════════════════════════════════════════════════════
+let currentData = [...STUDENTS].sort((a,b)=>b.gpa-a.gpa);
+let sortCol = 'gpa', sortDir = -1;
+
+function perfClass(p){
+  const m={Excellent:'excellent','Very Good':'verygood',Good:'good',Average:'average','Needs Improvement':'needs'};
+  return m[p]||'';
+}
+function gradeColor(g){
+  const m={O:'#4a8eff','A+':'#22c97a',A:'#a3e635','B+':'#f5a623',B:'#f59e0b',F:'#ff4d6d'};
+  return m[g]||'#5a7194';
+}
+
+function renderTable(data){
+  const sorted = [...STUDENTS].sort((a,b)=>b.gpa-a.gpa);
+  const body = document.getElementById('tableBody');
+  body.innerHTML = '';
+  data.forEach(s=>{
+    const rank = sorted.findIndex(x=>x.id===s.id)+1;
+    const avgAtt = (s.subjects.reduce((acc,x)=>acc+x.att,0)/s.subjects.length).toFixed(0);
+    const attPct = Math.min(+avgAtt,100);
+    const attColor = attPct<75 ? COLORS.red : COLORS.green;
+    const gpaColor = s.gpa>=9?COLORS.blue:s.gpa>=8?COLORS.green:s.gpa>=6?COLORS.gold:COLORS.red;
+    const rowId = 'row-'+s.id;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="rank-num">#${rank}</span></td>
+      <td>
+        <div class="student-name">${s.name}</div>
+        <div class="sid">${s.id}</div>
+      </td>
+      <td><span class="gpa-val" style="color:${gpaColor}">${s.gpa.toFixed(2)}</span></td>
+      <td><span class="pill ${perfClass(s.performance)}">${s.performance}</span></td>
+      <td>${s.avgMarks.toFixed(1)}</td>
+      <td>
+        ${s.backlogs>0
+          ? `<span style="color:var(--red)"><span class="backlog-dot" style="background:var(--red)"></span>${s.backlogs} backlog${s.backlogs>1?'s':''}</span>`
+          : `<span style="color:var(--green)">✓ Clear</span>`}
+      </td>
+      <td>
+        <div class="att-bar-wrap">
+          <span style="color:${attColor};font-size:.75rem">${avgAtt}%</span>
+          <div class="att-bar-bg"><div class="att-bar-fill" style="width:${attPct}%;background:${attColor}"></div></div>
+        </div>
+      </td>
+      <td><button class="btn-expand" onclick="toggleExpand('${s.id}')">▼</button></td>
+    `;
+    body.appendChild(tr);
+
+    // Expand row
+    const expTr = document.createElement('tr');
+    expTr.className = 'expand-row';
+    expTr.id = rowId;
+    expTr.innerHTML = `<td colspan="8">
+      <div class="expand-inner" id="inner-${s.id}">
+        <div class="subj-grid">
+          ${s.subjects.map(sub=>`
+            <div class="subj-card">
+              <div class="subj-name">${sub.name}</div>
+              <div class="subj-marks" style="color:${gradeColor(sub.grade)}">${sub.marks}</div>
+              <div class="subj-meta">${sub.credits} credits · Att: ${sub.att}%${sub.att<75?' ⚠️':''}</div>
+              <span class="subj-grade-pill" style="background:${gradeColor(sub.grade)}22;color:${gradeColor(sub.grade)}">${sub.grade} (${sub.gp} GP)</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </td>`;
+    body.appendChild(expTr);
+  });
+  document.getElementById('rowCount').textContent = data.length;
+}
+
+function toggleExpand(id){
+  const inner = document.getElementById('inner-'+id);
+  const row   = document.getElementById('row-'+id);
+  if(inner.classList.contains('open')){
+    inner.classList.remove('open');
+  } else {
+    inner.classList.add('open');
+  }
+}
+
+function applyFilters(){
+  const q    = document.getElementById('searchBox').value.toLowerCase();
+  const perf = document.getElementById('perfFilter').value;
+  const risk = document.getElementById('riskFilter').value;
+  let d = [...STUDENTS];
+  if(q)    d = d.filter(s=>s.name.toLowerCase().includes(q)||s.id.toLowerCase().includes(q));
+  if(perf) d = d.filter(s=>s.performance===perf);
+  if(risk==='backlog') d = d.filter(s=>s.backlogs>0);
+  if(risk==='lowatt')  d = d.filter(s=>s.lowAttCount>0);
+  d.sort((a,b)=>(a[sortCol]>b[sortCol]?1:-1)*sortDir);
+  renderTable(d);
+}
+
+document.getElementById('searchBox').addEventListener('input', applyFilters);
+document.getElementById('perfFilter').addEventListener('change', applyFilters);
+document.getElementById('riskFilter').addEventListener('change', applyFilters);
+
+// Sort columns
+document.querySelectorAll('th[data-col]').forEach(th=>{
+  th.addEventListener('click',()=>{
+    const col = th.dataset.col;
+    if(sortCol===col) sortDir *= -1; else { sortCol=col; sortDir=-1; }
+    document.querySelectorAll('th').forEach(t=>t.classList.remove('sorted'));
+    th.classList.add('sorted');
+    th.querySelector('.sort-arrow').textContent = sortDir===-1?'↓':'↑';
+    applyFilters();
+  });
+});
+
+// Initial render
+renderTable([...STUDENTS].sort((a,b)=>b.gpa-a.gpa));
+</script>
+</body>
+</html>
