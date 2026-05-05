@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>GPA Forecaster — What-If Simulator</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --bg:#060b18; --surface:#0d1626; --card:#111d33;
+    --border:#1e2f4a; --blue:#4a8eff; --gold:#f5a623;
+    --green:#22c97a; --red:#ff4d6d; --amber:#f59e0b;
+    --text:#e2eaf8; --muted:#5a7194;
+    --font-h:'Syne',sans-serif; --font-m:'JetBrains Mono',monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-m);min-height:100vh}
+  body::before{
+    content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:linear-gradient(rgba(74,142,255,.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(74,142,255,.03) 1px,transparent 1px);
+    background-size:40px 40px;
+  }
+  .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 24px 60px}
+
+  header{padding:32px 0 24px;border-bottom:1px solid var(--border);margin-bottom:32px}
+  .header-row{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--blue)}
+  header h1{font-family:var(--font-h);font-size:clamp(1.3rem,3vw,1.9rem);font-weight:800}
+  header p{font-size:.75rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-left:22px}
+
+  /* Student selector */
+  .selector-card{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:22px 24px;margin-bottom:20px;
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  .selector-card label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;white-space:nowrap}
+  select#studentSelect{
+    flex:1;min-width:220px;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:8px;padding:10px 14px;
+    color:var(--text);font-family:var(--font-m);font-size:.82rem;
+    outline:none;cursor:pointer;transition:border-color .2s;
+  }
+  select#studentSelect:focus{border-color:var(--blue)}
+  .btn-reset{
+    background:transparent;border:1px solid var(--border);
+    border-radius:8px;padding:10px 18px;
+    color:var(--muted);font-family:var(--font-m);font-size:.76rem;
+    cursor:pointer;transition:all .2s;letter-spacing:.5px;white-space:nowrap;
+  }
+  .btn-reset:hover{border-color:var(--red);color:var(--red)}
+
+  /* Main grid */
+  .main-grid{display:grid;grid-template-columns:1fr 280px;gap:20px;align-items:start}
+  @media(max-width:750px){.main-grid{grid-template-columns:1fr}}
+
+  /* Sliders section */
+  .sliders-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px}
+  .sliders-card h2{font-family:var(--font-h);font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px}
+
+  .subject-row{margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+  .subject-row:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+  .subj-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  .subj-name{font-size:.82rem;font-weight:700;color:var(--text)}
+  .subj-credits{font-size:.68rem;color:var(--muted)}
+  .subj-marks-display{display:flex;align-items:center;gap:10px}
+  .marks-val{
+    font-size:1.5rem;font-weight:700;line-height:1;
+    min-width:42px;text-align:right;
+    transition:color .2s;
+  }
+  .grade-badge{
+    font-size:.68rem;font-weight:700;border-radius:4px;
+    padding:2px 8px;min-width:32px;text-align:center;
+    transition:all .2s;
+  }
+  .delta{font-size:.7rem;min-width:40px;text-align:right}
+  .delta.up{color:var(--green)} .delta.down{color:var(--red)} .delta.same{color:var(--muted)}
+
+  /* Slider */
+  input[type=range]{
+    -webkit-appearance:none;width:100%;height:4px;
+    border-radius:2px;outline:none;cursor:pointer;
+    background:linear-gradient(to right,var(--slider-fill,var(--blue)) 0%,var(--slider-fill,var(--blue)) var(--pct,50%),var(--border) var(--pct,50%),var(--border) 100%);
+    transition:background .1s;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:14px;height:14px;
+    border-radius:50%;background:var(--slider-fill,var(--blue));
+    border:2px solid var(--card);transition:transform .15s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
+
+  /* Result card */
+  .result-card{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:24px;position:sticky;top:24px;
+  }
+  .result-card h2{font-family:var(--font-h);font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px}
+
+  .gpa-display{text-align:center;margin-bottom:20px}
+  .gpa-label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+  .gpa-number{
+    font-size:3.5rem;font-weight:700;line-height:1;
+    font-family:var(--font-m);transition:color .3s;
+  }
+  .gpa-denom{font-size:1rem;color:var(--muted);margin-left:4px}
+  .perf-band{
+    display:block;width:100%;border-radius:8px;padding:10px;
+    text-align:center;font-size:.75rem;font-weight:700;
+    letter-spacing:1px;text-transform:uppercase;
+    margin-bottom:20px;transition:all .3s;
+  }
+
+  /* Comparison */
+  .compare-section{border-top:1px solid var(--border);padding-top:18px}
+  .compare-section h3{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px}
+  .compare-row{display:flex;justify-content:space-between;margin-bottom:10px;font-size:.78rem;align-items:center}
+  .compare-label{color:var(--muted)}
+  .compare-vals{display:flex;align-items:center;gap:8px}
+  .old-val{color:var(--muted);text-decoration:line-through;font-size:.72rem}
+  .new-val{font-weight:700}
+  .arrow-icon{color:var(--muted);font-size:.7rem}
+
+  /* Progress bar */
+  .gpa-progress{margin-bottom:20px}
+  .progress-label{display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);margin-bottom:6px}
+  .progress-track{height:6px;background:var(--border);border-radius:3px;position:relative;overflow:hidden}
+  .progress-fill{height:100%;border-radius:3px;transition:width .4s ease,background .3s}
+  .band-markers{position:relative;display:flex;margin-top:4px}
+  .band-mark{flex:1;font-size:.6rem;color:var(--muted);text-align:center}
+
+  /* Suggestion box */
+  .suggestion{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:8px;padding:12px 14px;font-size:.74rem;
+    line-height:1.6;color:var(--muted);
+    border-left:3px solid var(--blue);
+    margin-top:16px;
+  }
+  .suggestion strong{color:var(--text)}
+
+  /* Scenarios */
+  .scenarios{margin-top:20px}
+  .scenario-btn{
+    display:block;width:100%;text-align:left;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:8px;padding:10px 14px;
+    color:var(--muted);font-family:var(--font-m);font-size:.74rem;
+    cursor:pointer;margin-bottom:8px;transition:all .2s;
+  }
+  .scenario-btn:hover{border-color:var(--blue);color:var(--blue)}
+  .scenario-btn span{color:var(--text);font-weight:700}
+
+  ::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-track{background:var(--surface)}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="header-row"><div class="dot"></div><h1>GPA What-If Simulator</h1></div>
+    <p>Adjust marks to forecast your GPA in real time</p>
+  </header>
+
+  <!-- Student selector -->
+  <div class="selector-card">
+    <label>Load student →</label>
+    <select id="studentSelect">
+      <option value="">— Custom / Manual Entry —</option>
+    </select>
+    <button class="btn-reset" onclick="resetSliders()">↺ Reset</button>
+  </div>
+
+  <div class="main-grid">
+
+    <!-- SLIDERS -->
+    <div class="sliders-card">
+      <h2>Adjust Subject Marks</h2>
+      <div id="sliderContainer"></div>
+    </div>
+
+    <!-- RESULT PANEL -->
+    <div class="result-card">
+      <h2>Projected GPA</h2>
+
+      <div class="gpa-display">
+        <div class="gpa-label">GPA</div>
+        <div><span class="gpa-number" id="gpaDisplay">—</span><span class="gpa-denom">/10</span></div>
+      </div>
+
+      <span class="perf-band" id="perfBand">—</span>
+
+      <div class="gpa-progress">
+        <div class="progress-label"><span>0</span><span>10</span></div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div class="band-markers">
+          <div class="band-mark" style="flex:5">NI</div>
+          <div class="band-mark" style="flex:1">Avg</div>
+          <div class="band-mark" style="flex:1">Gd</div>
+          <div class="band-mark" style="flex:1">VG</div>
+          <div class="band-mark" style="flex:1">Ex</div>
+        </div>
+      </div>
+
+      <div class="compare-section">
+        <h3>Current vs Projected</h3>
+        <div class="compare-row">
+          <span class="compare-label">GPA</span>
+          <div class="compare-vals">
+            <span class="old-val" id="cmpOldGPA">—</span>
+            <span class="arrow-icon">→</span>
+            <span class="new-val" id="cmpNewGPA">—</span>
+          </div>
+        </div>
+        <div class="compare-row">
+          <span class="compare-label">Band</span>
+          <div class="compare-vals">
+            <span class="old-val" id="cmpOldBand">—</span>
+            <span class="arrow-icon">→</span>
+            <span class="new-val" id="cmpNewBand">—</span>
+          </div>
+        </div>
+        <div class="compare-row">
+          <span class="compare-label">Backlogs</span>
+          <div class="compare-vals">
+            <span class="old-val" id="cmpOldBL">—</span>
+            <span class="arrow-icon">→</span>
+            <span class="new-val" id="cmpNewBL">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="suggestion" id="suggestionBox">
+        Select a student or adjust the sliders to see your projected GPA.
+      </div>
+
+      <div class="scenarios" id="scenarioBox"></div>
+    </div>
+
+  </div><!-- /main-grid -->
+</div><!-- /wrap -->
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  STUDENT DATA (same as dashboard)
+// ═══════════════════════════════════════════════════════
+const STUDENTS=[
+  {id:"S001",name:"Aarav Sharma",gpa:8.95,performance:"Very Good",backlogs:0,subjects:[{name:"Mathematics",credits:4,marks:88,gp:9,grade:"A+",att:92},{name:"Physics",credits:4,marks:76,gp:8,grade:"A",att:85},{name:"Chemistry",credits:3,marks:82,gp:9,grade:"A+",att:90},{name:"English",credits:2,marks:91,gp:10,grade:"O",att:95},{name:"Programming",credits:4,marks:95,gp:10,grade:"O",att:98},{name:"Eng. Drawing",credits:3,marks:74,gp:8,grade:"A",att:80}]},
+  {id:"S002",name:"Priya Nair",gpa:5.35,performance:"Average",backlogs:1,subjects:[{name:"Mathematics",credits:4,marks:55,gp:6,grade:"B",att:70},{name:"Physics",credits:4,marks:48,gp:0,grade:"F",att:65},{name:"Chemistry",credits:3,marks:62,gp:7,grade:"B+",att:72},{name:"English",credits:2,marks:78,gp:8,grade:"A",att:88},{name:"Programming",credits:4,marks:60,gp:7,grade:"B+",att:75},{name:"Eng. Drawing",credits:3,marks:52,gp:6,grade:"B",att:68}]},
+  {id:"S003",name:"Rohit Verma",gpa:9.30,performance:"Excellent",backlogs:0,subjects:[{name:"Mathematics",credits:4,marks:92,gp:10,grade:"O",att:96},{name:"Physics",credits:4,marks:89,gp:9,grade:"A+",att:94},{name:"Chemistry",credits:3,marks:85,gp:9,grade:"A+",att:91},{name:"English",credits:2,marks:79,gp:8,grade:"A",att:88},{name:"Programming",credits:4,marks:97,gp:10,grade:"O",att:99},{name:"Eng. Drawing",credits:3,marks:88,gp:9,grade:"A+",att:93}]},
+  {id:"S004",name:"Sneha Patel",gpa:7.60,performance:"Good",backlogs:0,subjects:[{name:"Mathematics",credits:4,marks:67,gp:7,grade:"B+",att:82},{name:"Physics",credits:4,marks:71,gp:8,grade:"A",att:79},{name:"Chemistry",credits:3,marks:69,gp:7,grade:"B+",att:84},{name:"English",credits:2,marks:88,gp:9,grade:"A+",att:92},{name:"Programming",credits:4,marks:75,gp:8,grade:"A",att:86},{name:"Eng. Drawing",credits:3,marks:63,gp:7,grade:"B+",att:77}]},
+  {id:"S005",name:"Vikram Singh",gpa:1.80,performance:"Needs Improvement",backlogs:4,subjects:[{name:"Mathematics",credits:4,marks:42,gp:0,grade:"F",att:60},{name:"Physics",credits:4,marks:38,gp:0,grade:"F",att:55},{name:"Chemistry",credits:3,marks:45,gp:0,grade:"F",att:62},{name:"English",credits:2,marks:55,gp:6,grade:"B",att:70},{name:"Programming",credits:4,marks:50,gp:6,grade:"B",att:65},{name:"Eng. Drawing",credits:3,marks:40,gp:0,grade:"F",att:58}]},
+  {id:"S006",name:"Ananya Reddy",gpa:8.80,performance:"Very Good",backlogs:0,subjects:[{name:"Mathematics",credits:4,marks:81,gp:9,grade:"A+",att:90},{name:"Physics",credits:4,marks:84,gp:9,grade:"A+",att:93},{name:"Chemistry",credits:3,marks:79,gp:8,grade:"A",att:88},{name:"English",credits:2,marks:93,gp:10,grade:"O",att:97},{name:"Programming",credits:4,marks:87,gp:9,grade:"A+",att:92},{name:"Eng. Drawing",credits:3,marks:76,gp:8,grade:"A",att:85}]},
+  {id:"S009",name:"Arjun Gupta",gpa:9.75,performance:"Excellent",backlogs:0,subjects:[{name:"Mathematics",credits:4,marks:94,gp:10,grade:"O",att:98},{name:"Physics",credits:4,marks:91,gp:10,grade:"O",att:96},{name:"Chemistry",credits:3,marks:88,gp:9,grade:"A+",att:94},{name:"English",credits:2,marks:82,gp:9,grade:"A+",att:90},{name:"Programming",credits:4,marks:96,gp:10,grade:"O",att:99},{name:"Eng. Drawing",credits:3,marks:90,gp:10,grade:"O",att:95}]},
+  {id:"S015",name:"Siddharth Rao",gpa:0.00,performance:"Needs Improvement",backlogs:6,subjects:[{name:"Mathematics",credits:4,marks:35,gp:0,grade:"F",att:50},{name:"Physics",credits:4,marks:40,gp:0,grade:"F",att:55},{name:"Chemistry",credits:3,marks:38,gp:0,grade:"F",att:52},{name:"English",credits:2,marks:48,gp:0,grade:"F",att:63},{name:"Programming",credits:4,marks:43,gp:0,grade:"F",att:58},{name:"Eng. Drawing",credits:3,marks:36,gp:0,grade:"F",att:50}]},
+  {id:"S026",name:"Ankita Sinha",gpa:9.85,performance:"Excellent",backlogs:0,subjects:[{name:"Mathematics",credits:4,marks:95,gp:10,grade:"O",att:99},{name:"Physics",credits:4,marks:92,gp:10,grade:"O",att:97},{name:"Chemistry",credits:3,marks:90,gp:10,grade:"O",att:96},{name:"English",credits:2,marks:97,gp:10,grade:"O",att:100},{name:"Programming",credits:4,marks:94,gp:10,grade:"O",att:98},{name:"Eng. Drawing",credits:3,marks:89,gp:9,grade:"A+",att:95}]},
+  {id:"S051",name:"Kartik Pillai",gpa:9.90,performance:"Excellent",backlogs:0,subjects:[{name:"Mathematics",credits:4,marks:96,gp:10,grade:"O",att:100},{name:"Physics",credits:4,marks:93,gp:10,grade:"O",att:98},{name:"Chemistry",credits:3,marks:91,gp:10,grade:"O",att:97},{name:"English",credits:2,marks:88,gp:9,grade:"A+",att:95},{name:"Programming",credits:4,marks:98,gp:10,grade:"O",att:100},{name:"Eng. Drawing",credits:3,marks:92,gp:10,grade:"O",att:97}]},
+  {id:"S053",name:"Suraj Tomar",gpa:0.00,performance:"Needs Improvement",backlogs:6,subjects:[{name:"Mathematics",credits:4,marks:33,gp:0,grade:"F",att:50},{name:"Physics",credits:4,marks:37,gp:0,grade:"F",att:54},{name:"Chemistry",credits:3,marks:30,gp:0,grade:"F",att:48},{name:"English",credits:2,marks:46,gp:0,grade:"F",att:62},{name:"Programming",credits:4,marks:40,gp:0,grade:"F",att:57},{name:"Eng. Drawing",credits:3,marks:31,gp:0,grade:"F",att:49}]}
+];
+
+// Default subjects (if no student selected)
+const DEFAULT_SUBJECTS = [
+  {name:"Mathematics",  credits:4},
+  {name:"Physics",      credits:4},
+  {name:"Chemistry",    credits:3},
+  {name:"English",      credits:2},
+  {name:"Programming",  credits:4},
+  {name:"Eng. Drawing", credits:3}
+];
+
+let currentOriginal = null;  // loaded student's original data
+
+// ── Populate dropdown ──
+const sel = document.getElementById('studentSelect');
+STUDENTS.forEach(s=>{
+  const o = document.createElement('option');
+  o.value = s.id; o.textContent = `${s.id} — ${s.name} (GPA ${s.gpa.toFixed(2)})`;
+  sel.appendChild(o);
+});
+
+// ── Grade helpers ──
+function calcGP(m){ if(m>=90)return 10; if(m>=80)return 9; if(m>=70)return 8; if(m>=60)return 7; if(m>=50)return 6; return 0; }
+function gradeStr(m){ const labels=['F','F','F','F','F','B','B+','A','A+','A+','O']; return labels[Math.min(10,calcGP(m))]; }
+function gradeColor(g){ const m={O:'#4a8eff','A+':'#22c97a',A:'#a3e635','B+':'#f5a623',B:'#f59e0b',F:'#ff4d6d'}; return m[g]||'#5a7194'; }
+function sliderColor(m){ if(m>=80)return '#22c97a'; if(m>=60)return '#f5a623'; if(m>=50)return '#f59e0b'; return '#ff4d6d'; }
+function perfLabel(g){ if(g>=9)return 'Excellent'; if(g>=8)return 'Very Good'; if(g>=7)return 'Good'; if(g>=6)return 'Average'; return 'Needs Improvement'; }
+function perfStyle(p){
+  const m={Excellent:'rgba(74,142,255,.15);color:#4a8eff','Very Good':'rgba(34,201,122,.15);color:#22c97a',
+    Good:'rgba(245,166,35,.15);color:#f5a623',Average:'rgba(245,158,11,.12);color:#f59e0b',
+    'Needs Improvement':'rgba(255,77,109,.15);color:#ff4d6d'};
+  return m[p]||'';
+}
+
+// ── Build sliders ──
+function buildSliders(subjects, initialMarks){
+  const c = document.getElementById('sliderContainer');
+  c.innerHTML = '';
+  subjects.forEach((subj, i)=>{
+    const init = initialMarks ? initialMarks[i] : 60;
+    const div = document.createElement('div');
+    div.className = 'subject-row';
+    div.innerHTML = `
+      <div class="subj-header">
+        <span class="subj-name">${subj.name}</span>
+        <span class="subj-credits">${subj.credits} credits</span>
+      </div>
+      <div class="subj-marks-display" style="margin-bottom:8px">
+        <span class="marks-val" id="mv-${i}">${init}</span>
+        <span class="grade-badge" id="gb-${i}">${gradeStr(init)}</span>
+        <span class="delta" id="dt-${i}"></span>
+      </div>
+      <input type="range" id="sl-${i}" min="0" max="100" value="${init}"
+        oninput="onSlide(${i},this.value)"
+        style="--pct:${init}%;--slider-fill:${sliderColor(init)}"/>
+    `;
+    c.appendChild(div);
+    updateSliderStyle(i, init, init);
+  });
+  updateResult();
+}
+
+function onSlide(i, val){
+  val = +val;
+  const init = currentOriginal ? currentOriginal[i] : 60;
+  updateSliderStyle(i, val, init);
+  updateResult();
+}
+
+function updateSliderStyle(i, val, orig){
+  const mv = document.getElementById('mv-'+i);
+  const gb = document.getElementById('gb-'+i);
+  const sl = document.getElementById('sl-'+i);
+  const dt = document.getElementById('dt-'+i);
+  const g  = gradeStr(val);
+  const gc = gradeColor(g);
+  const sc = sliderColor(val);
+
+  mv.textContent = val; mv.style.color = sc;
+  gb.textContent = g; gb.style.background = gc+'22'; gb.style.color = gc;
+  sl.style.setProperty('--pct', val+'%');
+  sl.style.setProperty('--slider-fill', sc);
+
+  if(orig !== undefined){
+    const diff = val - orig;
+    dt.textContent = diff===0 ? '' : (diff>0?'+':'')+diff;
+    dt.className = 'delta ' + (diff>0?'up':diff<0?'down':'same');
+  }
+}
+
+// ── Compute projected GPA ──
+function computeGPA(){
+  const subjects = currentOriginal
+    ? STUDENTS.find(s=>document.getElementById('studentSelect').value===s.id)?.subjects || DEFAULT_SUBJECTS
+    : DEFAULT_SUBJECTS;
+  const credits = subjects.map ? subjects : DEFAULT_SUBJECTS;
+  let weightedSum=0, totalCredits=0;
+  subjects.forEach((subj,i)=>{
+    const slider = document.getElementById('sl-'+i);
+    if(!slider) return;
+    const m = +slider.value;
+    weightedSum   += subj.credits * calcGP(m);
+    totalCredits  += subj.credits;
+  });
+  return totalCredits ? weightedSum/totalCredits : 0;
+}
+
+function countBacklogs(){
+  let bl=0;
+  const subjects = getActiveSubjects();
+  subjects.forEach((_,i)=>{
+    const sl = document.getElementById('sl-'+i);
+    if(sl && +sl.value < 50) bl++;
+  });
+  return bl;
+}
+
+function getActiveSubjects(){
+  const sid = document.getElementById('studentSelect').value;
+  if(sid){ const s=STUDENTS.find(x=>x.id===sid); if(s) return s.subjects; }
+  return DEFAULT_SUBJECTS;
+}
+
+// ── Update result panel ──
+function updateResult(){
+  const gpa  = computeGPA();
+  const perf = perfLabel(gpa);
+  const bl   = countBacklogs();
+  const pStyle = perfStyle(perf);
+
+  const gpaEl = document.getElementById('gpaDisplay');
+  gpaEl.textContent = gpa.toFixed(2);
+  gpaEl.style.color = sliderColor(gpa*10);
+
+  const perfEl = document.getElementById('perfBand');
+  perfEl.textContent = perf;
+  perfEl.style.cssText = `background:${pStyle.split(';')[0].split(':')[1]};color:${pStyle.split('color:')[1]}`;
+
+  document.getElementById('progressFill').style.width = (gpa/10*100)+'%';
+  document.getElementById('progressFill').style.background = sliderColor(gpa*10);
+
+  // Compare
+  document.getElementById('cmpNewGPA').textContent  = gpa.toFixed(2);
+  document.getElementById('cmpNewBand').textContent = perf;
+  document.getElementById('cmpNewBL').textContent   = bl + ' backlog' + (bl!==1?'s':'');
+  document.getElementById('cmpNewGPA').style.color  = sliderColor(gpa*10);
+
+  if(currentOriginal !== null){
+    const sid = document.getElementById('studentSelect').value;
+    const s   = STUDENTS.find(x=>x.id===sid);
+    if(s){
+      document.getElementById('cmpOldGPA').textContent  = s.gpa.toFixed(2);
+      document.getElementById('cmpOldBand').textContent = s.performance;
+      document.getElementById('cmpOldBL').textContent   = s.backlogs + ' backlog' + (s.backlogs!==1?'s':'');
+    }
+  }
+
+  // Suggestion
+  buildSuggestion(gpa, perf, bl);
+  buildScenarios(gpa);
+}
+
+function buildSuggestion(gpa, perf, bl){
+  const box = document.getElementById('suggestionBox');
+  if(bl>0){
+    box.innerHTML = `<strong>⚠️ ${bl} backlog${bl>1?'s':''} detected.</strong> Clear all subjects scoring below 50 to remove backlogs and significantly boost your GPA.`;
+    return;
+  }
+  const thresholds = [{g:9,label:'Excellent (9.0)'},{g:8,label:'Very Good (8.0)'},{g:7,label:'Good (7.0)'},{g:6,label:'Average (6.0)'}];
+  for(const t of thresholds){
+    if(gpa < t.g){
+      const gap = (t.g - gpa).toFixed(2);
+      box.innerHTML = `You need <strong>+${gap} GPA</strong> to reach <strong>${t.label}</strong>. Focus on your weakest subjects first — small mark improvements in high-credit subjects have the biggest impact.`;
+      return;
+    }
+  }
+  box.innerHTML = `🎉 <strong>Excellent band achieved!</strong> You're in the top tier. Try pushing for a perfect 10 by targeting remaining A+ subjects.`;
+}
+
+function buildScenarios(currentGPA){
+  const box = document.getElementById('scenarioBox');
+  const subjects = getActiveSubjects();
+  box.innerHTML = '<div style="font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">Quick Scenarios</div>';
+
+  const scenarios = [
+    {label:'All subjects at 60 (bare pass)', marks:subjects.map(()=>60)},
+    {label:'All subjects at 75 (solid pass)', marks:subjects.map(()=>75)},
+    {label:'All subjects at 85 (good)', marks:subjects.map(()=>85)},
+    {label:'All subjects at 90 (excellent)', marks:subjects.map(()=>90)},
+  ];
+  scenarios.forEach(sc=>{
+    let ws=0,tc=0;
+    sc.marks.forEach((m,i)=>{ ws+=subjects[i].credits*calcGP(m); tc+=subjects[i].credits; });
+    const g=(ws/tc).toFixed(2);
+    const btn=document.createElement('button');
+    btn.className='scenario-btn';
+    btn.innerHTML=`${sc.label} → GPA <span>${g}</span>`;
+    btn.onclick=()=>applyScenario(sc.marks);
+    box.appendChild(btn);
+  });
+}
+
+function applyScenario(marks){
+  marks.forEach((m,i)=>{
+    const sl=document.getElementById('sl-'+i);
+    if(sl){ sl.value=m; onSlide(i,m); }
+  });
+}
+
+// ── Load student ──
+sel.addEventListener('change', ()=>{
+  const sid = sel.value;
+  if(!sid){
+    currentOriginal = null;
+    buildSliders(DEFAULT_SUBJECTS, DEFAULT_SUBJECTS.map(()=>60));
+    document.getElementById('cmpOldGPA').textContent  = '—';
+    document.getElementById('cmpOldBand').textContent = '—';
+    document.getElementById('cmpOldBL').textContent   = '—';
+    return;
+  }
+  const s = STUDENTS.find(x=>x.id===sid);
+  if(!s) return;
+  currentOriginal = s.subjects.map(x=>x.marks);
+  buildSliders(s.subjects, currentOriginal);
+});
+
+function resetSliders(){
+  const sid = sel.value;
+  if(sid && currentOriginal){
+    const s=STUDENTS.find(x=>x.id===sid);
+    if(s){ buildSliders(s.subjects, currentOriginal); return; }
+  }
+  buildSliders(DEFAULT_SUBJECTS, DEFAULT_SUBJECTS.map(()=>60));
+}
+
+// ── Init ──
+buildSliders(DEFAULT_SUBJECTS, DEFAULT_SUBJECTS.map(()=>60));
+</script>
+</body>
+</html>
