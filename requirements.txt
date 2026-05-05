@@ -1,0 +1,12 @@
+# ── GPA & Performance Analyzer — Python Dependencies ──────────────────────────
+# Install all at once:  pip install -r requirements.txt
+# Python 3.8 or higher recommended
+
+# PDF generation — creates styled report cards with tables, headers, and layout
+reportlab==4.4.10
+
+# QR code generation — creates a unique scannable QR code per student in the PDF
+qrcode[pil]==8.2
+
+# Image processing — required by qrcode[pil] to render the QR code as an image
+Pillow==12.1.1
