@@ -1,0 +1,62 @@
+StudentID,StudentName,GPA,Performance,BacklogCount,LowAttendanceSubjects
+S001,Aarav Sharma,8.95,Very Good,0,0
+S002,Priya Nair,5.35,Needs Improvement,1,4
+S003,Rohit Verma,9.30,Excellent,0,0
+S004,Sneha Patel,7.60,Good,0,0
+S005,Vikram Singh,1.80,Needs Improvement,4,6
+S006,Ananya Reddy,8.80,Very Good,0,0
+S007,Karan Mehta,6.75,Average,0,3
+S008,Divya Krishnan,8.30,Very Good,0,0
+S009,Arjun Gupta,9.75,Excellent,0,0
+S010,Meera Iyer,6.60,Average,0,4
+S011,Rahul Joshi,8.30,Very Good,0,0
+S012,Tanvi Desai,1.90,Needs Improvement,4,5
+S013,Nikhil Bose,8.90,Very Good,0,0
+S014,Kavya Menon,7.55,Good,0,1
+S015,Siddharth Rao,0.00,Needs Improvement,6,6
+S016,Pooja Pillai,9.45,Excellent,0,0
+S017,Aditya Kumar,6.75,Average,0,3
+S018,Shruti Ghosh,8.25,Very Good,0,0
+S019,Manish Tiwari,1.80,Needs Improvement,4,6
+S020,Nisha Saxena,8.75,Very Good,0,0
+S021,Amit Chauhan,7.70,Good,0,0
+S022,Riya Malhotra,9.30,Excellent,0,0
+S023,Suresh Banerjee,5.20,Needs Improvement,1,5
+S024,Deepika Varma,7.75,Good,0,0
+S025,Rajesh Pandey,0.60,Needs Improvement,5,6
+S026,Ankita Sinha,9.85,Excellent,0,0
+S027,Vivek Aggarwal,6.95,Average,0,1
+S028,Sonali Chatterjee,8.50,Very Good,0,0
+S029,Harsh Mishra,0.60,Needs Improvement,5,6
+S030,Preethi Nambiar,9.10,Excellent,0,0
+S031,Gaurav Tripathi,6.30,Average,0,4
+S032,Ishita Kapoor,8.95,Very Good,0,0
+S033,Akash Dubey,3.10,Needs Improvement,3,6
+S034,Preeti Kulkarni,8.10,Very Good,0,0
+S035,Sameer Qureshi,0.60,Needs Improvement,5,6
+S036,Lavanya Subramaniam,9.65,Excellent,0,0
+S037,Yash Choudhury,7.30,Good,0,0
+S038,Bhavna Sharma,9.00,Excellent,0,0
+S039,Tarun Saxena,5.20,Needs Improvement,1,5
+S040,Roshni Menon,8.45,Very Good,0,0
+S041,Chirag Patel,6.80,Average,0,2
+S042,Swati Agarwal,9.85,Excellent,0,0
+S043,Lokesh Yadav,2.70,Needs Improvement,3,6
+S044,Harini Rajan,7.95,Good,0,0
+S045,Devendra Rawat,0.60,Needs Improvement,5,6
+S046,Manya Singh,8.75,Very Good,0,0
+S047,Parth Shah,6.50,Average,0,3
+S048,Kritika Mishra,9.10,Excellent,0,0
+S049,Uday Naik,1.80,Needs Improvement,4,6
+S050,Sarita Jain,7.55,Good,0,0
+S051,Kartik Pillai,9.90,Excellent,0,0
+S052,Neha Rastogi,6.55,Average,0,3
+S053,Suraj Tomar,0.00,Needs Improvement,6,6
+S054,Varsha Nair,8.30,Very Good,0,0
+S055,Omkar Kulkarni,7.10,Good,0,0
+S056,Falguni Mehta,9.10,Excellent,0,0
+S057,Akshay Sharma,4.30,Needs Improvement,2,5
+S058,Megha Pillai,9.50,Excellent,0,0
+S059,Dinesh Rawat,7.50,Good,0,0
+S060,Anushka Bhatt,8.75,Very Good,0,0
+S061,Nikunj Joshi,10.00,Excellent,0,0
