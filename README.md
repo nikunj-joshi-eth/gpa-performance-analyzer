@@ -16,8 +16,6 @@
 ![Status](https://img.shields.io/badge/Status-Completed-22c55e?style=for-the-badge)
 
 <!-- Academic Badges -->
-![College](https://img.shields.io/badge/MRIIRS-B.Tech%20II%20Sem-1B3A6B?style=for-the-badge)
-![Year](https://img.shields.io/badge/2025--26-Mathematics%20II%20Lab-7C3AED?style=for-the-badge)
 
 </div>
 
