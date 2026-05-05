@@ -1,0 +1,367 @@
+StudentID,StudentName,Semester,Subject,Credits,Marks,Attendance
+S001,Aarav Sharma,Sem 1,Mathematics,4,88,92
+S001,Aarav Sharma,Sem 1,Physics,4,76,85
+S001,Aarav Sharma,Sem 1,Chemistry,3,82,90
+S001,Aarav Sharma,Sem 1,English,2,91,95
+S001,Aarav Sharma,Sem 1,Programming,4,95,98
+S001,Aarav Sharma,Sem 1,Engineering Drawing,3,74,80
+S002,Priya Nair,Sem 1,Mathematics,4,55,70
+S002,Priya Nair,Sem 1,Physics,4,48,65
+S002,Priya Nair,Sem 1,Chemistry,3,62,72
+S002,Priya Nair,Sem 1,English,2,78,88
+S002,Priya Nair,Sem 1,Programming,4,60,75
+S002,Priya Nair,Sem 1,Engineering Drawing,3,52,68
+S003,Rohit Verma,Sem 1,Mathematics,4,92,96
+S003,Rohit Verma,Sem 1,Physics,4,89,94
+S003,Rohit Verma,Sem 1,Chemistry,3,85,91
+S003,Rohit Verma,Sem 1,English,2,79,88
+S003,Rohit Verma,Sem 1,Programming,4,97,99
+S003,Rohit Verma,Sem 1,Engineering Drawing,3,88,93
+S004,Sneha Patel,Sem 1,Mathematics,4,67,82
+S004,Sneha Patel,Sem 1,Physics,4,71,79
+S004,Sneha Patel,Sem 1,Chemistry,3,69,84
+S004,Sneha Patel,Sem 1,English,2,88,92
+S004,Sneha Patel,Sem 1,Programming,4,75,86
+S004,Sneha Patel,Sem 1,Engineering Drawing,3,63,77
+S005,Vikram Singh,Sem 1,Mathematics,4,42,60
+S005,Vikram Singh,Sem 1,Physics,4,38,55
+S005,Vikram Singh,Sem 1,Chemistry,3,45,62
+S005,Vikram Singh,Sem 1,English,2,55,70
+S005,Vikram Singh,Sem 1,Programming,4,50,65
+S005,Vikram Singh,Sem 1,Engineering Drawing,3,40,58
+S006,Ananya Reddy,Sem 1,Mathematics,4,81,90
+S006,Ananya Reddy,Sem 1,Physics,4,84,93
+S006,Ananya Reddy,Sem 1,Chemistry,3,79,88
+S006,Ananya Reddy,Sem 1,English,2,93,97
+S006,Ananya Reddy,Sem 1,Programming,4,87,92
+S006,Ananya Reddy,Sem 1,Engineering Drawing,3,76,85
+S007,Karan Mehta,Sem 1,Mathematics,4,60,74
+S007,Karan Mehta,Sem 1,Physics,4,58,71
+S007,Karan Mehta,Sem 1,Chemistry,3,65,78
+S007,Karan Mehta,Sem 1,English,2,72,83
+S007,Karan Mehta,Sem 1,Programming,4,68,79
+S007,Karan Mehta,Sem 1,Engineering Drawing,3,55,69
+S008,Divya Krishnan,Sem 1,Mathematics,4,75,86
+S008,Divya Krishnan,Sem 1,Physics,4,70,82
+S008,Divya Krishnan,Sem 1,Chemistry,3,78,88
+S008,Divya Krishnan,Sem 1,English,2,85,91
+S008,Divya Krishnan,Sem 1,Programming,4,80,89
+S008,Divya Krishnan,Sem 1,Engineering Drawing,3,72,83
+S009,Arjun Gupta,Sem 1,Mathematics,4,94,98
+S009,Arjun Gupta,Sem 1,Physics,4,91,96
+S009,Arjun Gupta,Sem 1,Chemistry,3,88,94
+S009,Arjun Gupta,Sem 1,English,2,82,90
+S009,Arjun Gupta,Sem 1,Programming,4,96,99
+S009,Arjun Gupta,Sem 1,Engineering Drawing,3,90,95
+S010,Meera Iyer,Sem 1,Mathematics,4,53,67
+S010,Meera Iyer,Sem 1,Physics,4,61,73
+S010,Meera Iyer,Sem 1,Chemistry,3,57,70
+S010,Meera Iyer,Sem 1,English,2,74,84
+S010,Meera Iyer,Sem 1,Programming,4,65,77
+S010,Meera Iyer,Sem 1,Engineering Drawing,3,50,64
+S011,Rahul Joshi,Sem 1,Mathematics,4,77,88
+S011,Rahul Joshi,Sem 1,Physics,4,80,90
+S011,Rahul Joshi,Sem 1,Chemistry,3,74,85
+S011,Rahul Joshi,Sem 1,English,2,68,80
+S011,Rahul Joshi,Sem 1,Programming,4,83,91
+S011,Rahul Joshi,Sem 1,Engineering Drawing,3,71,82
+S012,Tanvi Desai,Sem 1,Mathematics,4,46,63
+S012,Tanvi Desai,Sem 1,Physics,4,44,60
+S012,Tanvi Desai,Sem 1,Chemistry,3,49,66
+S012,Tanvi Desai,Sem 1,English,2,62,75
+S012,Tanvi Desai,Sem 1,Programming,4,55,70
+S012,Tanvi Desai,Sem 1,Engineering Drawing,3,41,57
+S013,Nikhil Bose,Sem 1,Mathematics,4,86,93
+S013,Nikhil Bose,Sem 1,Physics,4,83,91
+S013,Nikhil Bose,Sem 1,Chemistry,3,80,89
+S013,Nikhil Bose,Sem 1,English,2,76,87
+S013,Nikhil Bose,Sem 1,Programming,4,89,94
+S013,Nikhil Bose,Sem 1,Engineering Drawing,3,82,90
+S014,Kavya Menon,Sem 1,Mathematics,4,62,76
+S014,Kavya Menon,Sem 1,Physics,4,66,79
+S014,Kavya Menon,Sem 1,Chemistry,3,71,83
+S014,Kavya Menon,Sem 1,English,2,80,89
+S014,Kavya Menon,Sem 1,Programming,4,73,84
+S014,Kavya Menon,Sem 1,Engineering Drawing,3,60,74
+S015,Siddharth Rao,Sem 1,Mathematics,4,35,50
+S015,Siddharth Rao,Sem 1,Physics,4,40,55
+S015,Siddharth Rao,Sem 1,Chemistry,3,38,52
+S015,Siddharth Rao,Sem 1,English,2,48,63
+S015,Siddharth Rao,Sem 1,Programming,4,43,58
+S015,Siddharth Rao,Sem 1,Engineering Drawing,3,36,50
+S016,Pooja Pillai,Sem 1,Mathematics,4,90,97
+S016,Pooja Pillai,Sem 1,Physics,4,87,94
+S016,Pooja Pillai,Sem 1,Chemistry,3,92,98
+S016,Pooja Pillai,Sem 1,English,2,95,99
+S016,Pooja Pillai,Sem 1,Programming,4,88,95
+S016,Pooja Pillai,Sem 1,Engineering Drawing,3,85,92
+S017,Aditya Kumar,Sem 1,Mathematics,4,58,72
+S017,Aditya Kumar,Sem 1,Physics,4,63,76
+S017,Aditya Kumar,Sem 1,Chemistry,3,60,74
+S017,Aditya Kumar,Sem 1,English,2,70,82
+S017,Aditya Kumar,Sem 1,Programming,4,67,79
+S017,Aditya Kumar,Sem 1,Engineering Drawing,3,54,68
+S018,Shruti Ghosh,Sem 1,Mathematics,4,79,89
+S018,Shruti Ghosh,Sem 1,Physics,4,75,86
+S018,Shruti Ghosh,Sem 1,Chemistry,3,82,91
+S018,Shruti Ghosh,Sem 1,English,2,88,94
+S018,Shruti Ghosh,Sem 1,Programming,4,77,88
+S018,Shruti Ghosh,Sem 1,Engineering Drawing,3,73,84
+S019,Manish Tiwari,Sem 1,Mathematics,4,44,62
+S019,Manish Tiwari,Sem 1,Physics,4,47,65
+S019,Manish Tiwari,Sem 1,Chemistry,3,41,59
+S019,Manish Tiwari,Sem 1,English,2,56,71
+S019,Manish Tiwari,Sem 1,Programming,4,52,67
+S019,Manish Tiwari,Sem 1,Engineering Drawing,3,39,54
+S020,Nisha Saxena,Sem 1,Mathematics,4,83,92
+S020,Nisha Saxena,Sem 1,Physics,4,78,88
+S020,Nisha Saxena,Sem 1,Chemistry,3,86,93
+S020,Nisha Saxena,Sem 1,English,2,91,97
+S020,Nisha Saxena,Sem 1,Programming,4,84,92
+S020,Nisha Saxena,Sem 1,Engineering Drawing,3,79,89
+S021,Amit Chauhan,Sem 1,Mathematics,4,70,83
+S021,Amit Chauhan,Sem 1,Physics,4,74,86
+S021,Amit Chauhan,Sem 1,Chemistry,3,68,80
+S021,Amit Chauhan,Sem 1,English,2,77,88
+S021,Amit Chauhan,Sem 1,Programming,4,72,84
+S021,Amit Chauhan,Sem 1,Engineering Drawing,3,65,78
+S022,Riya Malhotra,Sem 1,Mathematics,4,89,95
+S022,Riya Malhotra,Sem 1,Physics,4,86,93
+S022,Riya Malhotra,Sem 1,Chemistry,3,83,91
+S022,Riya Malhotra,Sem 1,English,2,94,98
+S022,Riya Malhotra,Sem 1,Programming,4,91,96
+S022,Riya Malhotra,Sem 1,Engineering Drawing,3,87,93
+S023,Suresh Banerjee,Sem 1,Mathematics,4,50,65
+S023,Suresh Banerjee,Sem 1,Physics,4,53,68
+S023,Suresh Banerjee,Sem 1,Chemistry,3,56,72
+S023,Suresh Banerjee,Sem 1,English,2,64,77
+S023,Suresh Banerjee,Sem 1,Programming,4,58,74
+S023,Suresh Banerjee,Sem 1,Engineering Drawing,3,47,62
+S024,Deepika Varma,Sem 1,Mathematics,4,73,85
+S024,Deepika Varma,Sem 1,Physics,4,69,81
+S024,Deepika Varma,Sem 1,Chemistry,3,75,87
+S024,Deepika Varma,Sem 1,English,2,82,92
+S024,Deepika Varma,Sem 1,Programming,4,70,83
+S024,Deepika Varma,Sem 1,Engineering Drawing,3,67,79
+S025,Rajesh Pandey,Sem 1,Mathematics,4,37,53
+S025,Rajesh Pandey,Sem 1,Physics,4,42,58
+S025,Rajesh Pandey,Sem 1,Chemistry,3,35,50
+S025,Rajesh Pandey,Sem 1,English,2,50,66
+S025,Rajesh Pandey,Sem 1,Programming,4,45,61
+S025,Rajesh Pandey,Sem 1,Engineering Drawing,3,33,48
+S026,Ankita Sinha,Sem 1,Mathematics,4,95,99
+S026,Ankita Sinha,Sem 1,Physics,4,92,97
+S026,Ankita Sinha,Sem 1,Chemistry,3,90,96
+S026,Ankita Sinha,Sem 1,English,2,97,100
+S026,Ankita Sinha,Sem 1,Programming,4,94,98
+S026,Ankita Sinha,Sem 1,Engineering Drawing,3,89,95
+S027,Vivek Aggarwal,Sem 1,Mathematics,4,64,78
+S027,Vivek Aggarwal,Sem 1,Physics,4,60,75
+S027,Vivek Aggarwal,Sem 1,Chemistry,3,67,80
+S027,Vivek Aggarwal,Sem 1,English,2,73,85
+S027,Vivek Aggarwal,Sem 1,Programming,4,62,77
+S027,Vivek Aggarwal,Sem 1,Engineering Drawing,3,58,72
+S028,Sonali Chatterjee,Sem 1,Mathematics,4,78,89
+S028,Sonali Chatterjee,Sem 1,Physics,4,82,91
+S028,Sonali Chatterjee,Sem 1,Chemistry,3,76,87
+S028,Sonali Chatterjee,Sem 1,English,2,86,93
+S028,Sonali Chatterjee,Sem 1,Programming,4,81,90
+S028,Sonali Chatterjee,Sem 1,Engineering Drawing,3,74,86
+S029,Harsh Mishra,Sem 1,Mathematics,4,43,61
+S029,Harsh Mishra,Sem 1,Physics,4,46,64
+S029,Harsh Mishra,Sem 1,Chemistry,3,40,58
+S029,Harsh Mishra,Sem 1,English,2,54,70
+S029,Harsh Mishra,Sem 1,Programming,4,49,65
+S029,Harsh Mishra,Sem 1,Engineering Drawing,3,38,53
+S030,Preethi Nambiar,Sem 1,Mathematics,4,87,94
+S030,Preethi Nambiar,Sem 1,Physics,4,84,92
+S030,Preethi Nambiar,Sem 1,Chemistry,3,81,90
+S030,Preethi Nambiar,Sem 1,English,2,90,96
+S030,Preethi Nambiar,Sem 1,Programming,4,86,93
+S030,Preethi Nambiar,Sem 1,Engineering Drawing,3,83,91
+S031,Gaurav Tripathi,Sem 1,Mathematics,4,56,71
+S031,Gaurav Tripathi,Sem 1,Physics,4,59,73
+S031,Gaurav Tripathi,Sem 1,Chemistry,3,53,68
+S031,Gaurav Tripathi,Sem 1,English,2,66,79
+S031,Gaurav Tripathi,Sem 1,Programming,4,61,76
+S031,Gaurav Tripathi,Sem 1,Engineering Drawing,3,50,65
+S032,Ishita Kapoor,Sem 1,Mathematics,4,84,93
+S032,Ishita Kapoor,Sem 1,Physics,4,80,90
+S032,Ishita Kapoor,Sem 1,Chemistry,3,87,94
+S032,Ishita Kapoor,Sem 1,English,2,92,97
+S032,Ishita Kapoor,Sem 1,Programming,4,85,93
+S032,Ishita Kapoor,Sem 1,Engineering Drawing,3,78,88
+S033,Akash Dubey,Sem 1,Mathematics,4,48,64
+S033,Akash Dubey,Sem 1,Physics,4,51,67
+S033,Akash Dubey,Sem 1,Chemistry,3,46,62
+S033,Akash Dubey,Sem 1,English,2,60,74
+S033,Akash Dubey,Sem 1,Programming,4,55,70
+S033,Akash Dubey,Sem 1,Engineering Drawing,3,43,59
+S034,Preeti Kulkarni,Sem 1,Mathematics,4,76,87
+S034,Preeti Kulkarni,Sem 1,Physics,4,72,84
+S034,Preeti Kulkarni,Sem 1,Chemistry,3,79,89
+S034,Preeti Kulkarni,Sem 1,English,2,84,93
+S034,Preeti Kulkarni,Sem 1,Programming,4,74,86
+S034,Preeti Kulkarni,Sem 1,Engineering Drawing,3,70,82
+S035,Sameer Qureshi,Sem 1,Mathematics,4,39,56
+S035,Sameer Qureshi,Sem 1,Physics,4,36,52
+S035,Sameer Qureshi,Sem 1,Chemistry,3,42,59
+S035,Sameer Qureshi,Sem 1,English,2,52,68
+S035,Sameer Qureshi,Sem 1,Programming,4,46,63
+S035,Sameer Qureshi,Sem 1,Engineering Drawing,3,34,50
+S036,Lavanya Subramaniam,Sem 1,Mathematics,4,91,97
+S036,Lavanya Subramaniam,Sem 1,Physics,4,88,95
+S036,Lavanya Subramaniam,Sem 1,Chemistry,3,93,98
+S036,Lavanya Subramaniam,Sem 1,English,2,96,100
+S036,Lavanya Subramaniam,Sem 1,Programming,4,90,96
+S036,Lavanya Subramaniam,Sem 1,Engineering Drawing,3,86,94
+S037,Yash Choudhury,Sem 1,Mathematics,4,66,80
+S037,Yash Choudhury,Sem 1,Physics,4,70,83
+S037,Yash Choudhury,Sem 1,Chemistry,3,63,77
+S037,Yash Choudhury,Sem 1,English,2,75,87
+S037,Yash Choudhury,Sem 1,Programming,4,69,82
+S037,Yash Choudhury,Sem 1,Engineering Drawing,3,61,76
+S038,Bhavna Sharma,Sem 1,Mathematics,4,85,93
+S038,Bhavna Sharma,Sem 1,Physics,4,81,91
+S038,Bhavna Sharma,Sem 1,Chemistry,3,84,92
+S038,Bhavna Sharma,Sem 1,English,2,89,96
+S038,Bhavna Sharma,Sem 1,Programming,4,83,92
+S038,Bhavna Sharma,Sem 1,Engineering Drawing,3,80,90
+S039,Tarun Saxena,Sem 1,Mathematics,4,54,69
+S039,Tarun Saxena,Sem 1,Physics,4,57,72
+S039,Tarun Saxena,Sem 1,Chemistry,3,51,66
+S039,Tarun Saxena,Sem 1,English,2,63,77
+S039,Tarun Saxena,Sem 1,Programming,4,59,74
+S039,Tarun Saxena,Sem 1,Engineering Drawing,3,48,63
+S040,Roshni Menon,Sem 1,Mathematics,4,80,91
+S040,Roshni Menon,Sem 1,Physics,4,77,88
+S040,Roshni Menon,Sem 1,Chemistry,3,83,92
+S040,Roshni Menon,Sem 1,English,2,87,95
+S040,Roshni Menon,Sem 1,Programming,4,79,90
+S040,Roshni Menon,Sem 1,Engineering Drawing,3,75,86
+S041,Chirag Patel,Sem 1,Mathematics,4,61,75
+S041,Chirag Patel,Sem 1,Physics,4,64,78
+S041,Chirag Patel,Sem 1,Chemistry,3,58,72
+S041,Chirag Patel,Sem 1,English,2,71,84
+S041,Chirag Patel,Sem 1,Programming,4,66,80
+S041,Chirag Patel,Sem 1,Engineering Drawing,3,56,70
+S042,Swati Agarwal,Sem 1,Mathematics,4,93,98
+S042,Swati Agarwal,Sem 1,Physics,4,90,96
+S042,Swati Agarwal,Sem 1,Chemistry,3,95,99
+S042,Swati Agarwal,Sem 1,English,2,98,100
+S042,Swati Agarwal,Sem 1,Programming,4,92,97
+S042,Swati Agarwal,Sem 1,Engineering Drawing,3,88,95
+S043,Lokesh Yadav,Sem 1,Mathematics,4,47,63
+S043,Lokesh Yadav,Sem 1,Physics,4,43,59
+S043,Lokesh Yadav,Sem 1,Chemistry,3,50,65
+S043,Lokesh Yadav,Sem 1,English,2,58,73
+S043,Lokesh Yadav,Sem 1,Programming,4,53,68
+S043,Lokesh Yadav,Sem 1,Engineering Drawing,3,41,57
+S044,Harini Rajan,Sem 1,Mathematics,4,74,86
+S044,Harini Rajan,Sem 1,Physics,4,78,89
+S044,Harini Rajan,Sem 1,Chemistry,3,72,84
+S044,Harini Rajan,Sem 1,English,2,83,92
+S044,Harini Rajan,Sem 1,Programming,4,76,88
+S044,Harini Rajan,Sem 1,Engineering Drawing,3,69,81
+S045,Devendra Rawat,Sem 1,Mathematics,4,41,58
+S045,Devendra Rawat,Sem 1,Physics,4,44,61
+S045,Devendra Rawat,Sem 1,Chemistry,3,38,55
+S045,Devendra Rawat,Sem 1,English,2,53,69
+S045,Devendra Rawat,Sem 1,Programming,4,47,63
+S045,Devendra Rawat,Sem 1,Engineering Drawing,3,36,52
+S046,Manya Singh,Sem 1,Mathematics,4,82,92
+S046,Manya Singh,Sem 1,Physics,4,79,90
+S046,Manya Singh,Sem 1,Chemistry,3,85,93
+S046,Manya Singh,Sem 1,English,2,90,97
+S046,Manya Singh,Sem 1,Programming,4,80,91
+S046,Manya Singh,Sem 1,Engineering Drawing,3,77,88
+S047,Parth Shah,Sem 1,Mathematics,4,57,72
+S047,Parth Shah,Sem 1,Physics,4,61,76
+S047,Parth Shah,Sem 1,Chemistry,3,55,70
+S047,Parth Shah,Sem 1,English,2,68,81
+S047,Parth Shah,Sem 1,Programming,4,63,77
+S047,Parth Shah,Sem 1,Engineering Drawing,3,52,67
+S048,Kritika Mishra,Sem 1,Mathematics,4,88,95
+S048,Kritika Mishra,Sem 1,Physics,4,85,93
+S048,Kritika Mishra,Sem 1,Chemistry,3,81,91
+S048,Kritika Mishra,Sem 1,English,2,92,97
+S048,Kritika Mishra,Sem 1,Programming,4,87,94
+S048,Kritika Mishra,Sem 1,Engineering Drawing,3,84,92
+S049,Uday Naik,Sem 1,Mathematics,4,45,62
+S049,Uday Naik,Sem 1,Physics,4,49,66
+S049,Uday Naik,Sem 1,Chemistry,3,43,60
+S049,Uday Naik,Sem 1,English,2,57,72
+S049,Uday Naik,Sem 1,Programming,4,51,67
+S049,Uday Naik,Sem 1,Engineering Drawing,3,40,56
+S050,Sarita Jain,Sem 1,Mathematics,4,71,84
+S050,Sarita Jain,Sem 1,Physics,4,67,80
+S050,Sarita Jain,Sem 1,Chemistry,3,74,86
+S050,Sarita Jain,Sem 1,English,2,81,91
+S050,Sarita Jain,Sem 1,Programming,4,69,82
+S050,Sarita Jain,Sem 1,Engineering Drawing,3,64,78
+S051,Kartik Pillai,Sem 1,Mathematics,4,96,100
+S051,Kartik Pillai,Sem 1,Physics,4,93,98
+S051,Kartik Pillai,Sem 1,Chemistry,3,91,97
+S051,Kartik Pillai,Sem 1,English,2,88,95
+S051,Kartik Pillai,Sem 1,Programming,4,98,100
+S051,Kartik Pillai,Sem 1,Engineering Drawing,3,92,97
+S052,Neha Rastogi,Sem 1,Mathematics,4,59,74
+S052,Neha Rastogi,Sem 1,Physics,4,55,70
+S052,Neha Rastogi,Sem 1,Chemistry,3,62,76
+S052,Neha Rastogi,Sem 1,English,2,70,83
+S052,Neha Rastogi,Sem 1,Programming,4,64,78
+S052,Neha Rastogi,Sem 1,Engineering Drawing,3,53,68
+S053,Suraj Tomar,Sem 1,Mathematics,4,33,50
+S053,Suraj Tomar,Sem 1,Physics,4,37,54
+S053,Suraj Tomar,Sem 1,Chemistry,3,30,48
+S053,Suraj Tomar,Sem 1,English,2,46,62
+S053,Suraj Tomar,Sem 1,Programming,4,40,57
+S053,Suraj Tomar,Sem 1,Engineering Drawing,3,31,49
+S054,Varsha Nair,Sem 1,Mathematics,4,77,88
+S054,Varsha Nair,Sem 1,Physics,4,81,91
+S054,Varsha Nair,Sem 1,Chemistry,3,75,87
+S054,Varsha Nair,Sem 1,English,2,85,94
+S054,Varsha Nair,Sem 1,Programming,4,79,89
+S054,Varsha Nair,Sem 1,Engineering Drawing,3,73,85
+S055,Omkar Kulkarni,Sem 1,Mathematics,4,65,79
+S055,Omkar Kulkarni,Sem 1,Physics,4,68,82
+S055,Omkar Kulkarni,Sem 1,Chemistry,3,62,76
+S055,Omkar Kulkarni,Sem 1,English,2,74,86
+S055,Omkar Kulkarni,Sem 1,Programming,4,67,81
+S055,Omkar Kulkarni,Sem 1,Engineering Drawing,3,60,75
+S056,Falguni Mehta,Sem 1,Mathematics,4,86,94
+S056,Falguni Mehta,Sem 1,Physics,4,82,92
+S056,Falguni Mehta,Sem 1,Chemistry,3,88,95
+S056,Falguni Mehta,Sem 1,English,2,93,98
+S056,Falguni Mehta,Sem 1,Programming,4,85,93
+S056,Falguni Mehta,Sem 1,Engineering Drawing,3,81,91
+S057,Akshay Sharma,Sem 1,Mathematics,4,52,67
+S057,Akshay Sharma,Sem 1,Physics,4,56,71
+S057,Akshay Sharma,Sem 1,Chemistry,3,49,65
+S057,Akshay Sharma,Sem 1,English,2,62,77
+S057,Akshay Sharma,Sem 1,Programming,4,57,73
+S057,Akshay Sharma,Sem 1,Engineering Drawing,3,46,62
+S058,Megha Pillai,Sem 1,Mathematics,4,90,97
+S058,Megha Pillai,Sem 1,Physics,4,86,94
+S058,Megha Pillai,Sem 1,Chemistry,3,89,96
+S058,Megha Pillai,Sem 1,English,2,94,99
+S058,Megha Pillai,Sem 1,Programming,4,91,97
+S058,Megha Pillai,Sem 1,Engineering Drawing,3,87,94
+S059,Dinesh Rawat,Sem 1,Mathematics,4,68,81
+S059,Dinesh Rawat,Sem 1,Physics,4,72,84
+S059,Dinesh Rawat,Sem 1,Chemistry,3,66,79
+S059,Dinesh Rawat,Sem 1,English,2,76,88
+S059,Dinesh Rawat,Sem 1,Programming,4,70,83
+S059,Dinesh Rawat,Sem 1,Engineering Drawing,3,63,77
+S060,Anushka Bhatt,Sem 1,Mathematics,4,83,93
+S060,Anushka Bhatt,Sem 1,Physics,4,79,90
+S060,Anushka Bhatt,Sem 1,Chemistry,3,86,94
+S060,Anushka Bhatt,Sem 1,English,2,91,97
+S060,Anushka Bhatt,Sem 1,Programming,4,82,92
+S060,Anushka Bhatt,Sem 1,Engineering Drawing,3,77,88
+S061,Nikunj Joshi,Sem 1,Mathematics,4,99,93
+S061,Nikunj Joshi,Sem 1,Physics,4,99,99
+S061,Nikunj Joshi,Sem 1,Chemistry,3,99,99
+S061,Nikunj Joshi,Sem 1,English,2,99,99
+S061,Nikunj Joshi,Sem 1,Programming,4,99,99
+S061,Nikunj Joshi,Sem 1,Engineering Drawing,3,99,99
