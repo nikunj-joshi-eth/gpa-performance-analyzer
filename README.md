@@ -178,7 +178,7 @@ student_data.csv
 
 <div align="center">
 
-![Nikunj Joshi](https://img.shields.io/badge/Nikunj%20Joshi-25%2FSET%2FBCSE%2F137-1B3A6B?style=for-the-badge&logo=github&logoColor=white)
+![Nikunj Joshi](https://img.shields.io/badge/Nikunj%20Joshi-1B3A6B?style=for-the-badge&logo=github&logoColor=white)
 
 Nikunj Joshi B.Tech Student | Embedded Systems | IoT | Problem Solver
 
