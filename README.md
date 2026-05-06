@@ -8,8 +8,8 @@
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Chart.js](https://img.shields.io/badge/Chart.js-v4-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
-![GitHub release](https://img.shields.io/github/v/release/yourusername/gpa-performance-analyzer?style=for-the-badge&color=1B3A6B)
-![Python CI](https://github.com/yourusername/gpa-performance-analyzer/actions/workflows/python-app.yml/badge.svg)
+![GitHub release](https://img.shields.io/github/v/release/nikunj-joshi-eth/gpa-performance-analyzer?style=for-the-badge&color=1B3A6B)
+![Python CI](https://github.com/nikunj-joshi-eth/gpa-performance-analyzer/actions/workflows/python-app.yml/badge.svg)
 
 <!-- Project Info Badges -->
 ![Students](https://img.shields.io/badge/Students-60-16A34A?style=for-the-badge)
