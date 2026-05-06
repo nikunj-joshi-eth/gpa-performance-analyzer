@@ -1,4 +1,6 @@
 # ── GPA & Performance Analyzer — Python Dependencies ──────────────────────────
+
+# 2 pages for dashboard and forecaster will be updated soon
 # Install all at once:  pip install -r requirements.txt
 # Python 3.8 or higher recommended
 
